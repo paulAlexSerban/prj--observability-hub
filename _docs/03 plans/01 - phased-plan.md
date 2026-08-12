@@ -92,6 +92,30 @@
 
 **Exit gate:** `https://status.paulserban.eu` (or a placeholder service) resolves with valid TLS through Traefik. Repo has a working `docker compose up -d` a second machine could reproduce from a fresh clone.
 
+### Notes
+
+Yes. Lightsail is a first-class resource in the Terraform AWS provider, so Phase 1 can stay in the same account/tooling as S3 + CloudFront + Route53.
+
+What Terraform should own:
+
+| Resource                                                       | Terraform type                                                   |
+| -------------------------------------------------------------- | ---------------------------------------------------------------- |
+| Instance (Ubuntu, size, AZ, SSH key, `user_data`)              | `aws_lightsail_instance`                                         |
+| Stable public IP (required — default IP changes on stop/start) | `aws_lightsail_static_ip` + `aws_lightsail_static_ip_attachment` |
+| Firewall: 22 / 80 / 443 only                                   | `aws_lightsail_instance_public_ports`                            |
+| DNS: `analytics.`, `status.`, `grafana.`, `errors.` → that IP  | `aws_route53_record` (zone already in the portfolio stack)       |
+
+`user_data` can install Docker, Compose, a non-root deploy user, and SSH-key-only login. Traefik + `docker-compose.yml` stay in git and get deployed onto the box; do not try to manage containers as Terraform resources.
+
+Caveats that matter for *your* plan:
+
+1. **RAM.** The plan says ~2–3GB once Umami, Postgres, Grafana, and later Loki are on it. The $5 Lightsail bundle is 1GB and will not hold. Budget the **$12/mo 2GB** or **$24/mo 4GB** bundle, not the $5–10 line in the table.
+2. **IAM from the VPS.** Lightsail is weaker than EC2 for instance profiles. For CloudWatch/S3 reads, reuse the same pattern as Phase 0 (IAM user + keys on the instance) unless you explicitly add Lightsail instance-role support. Same AWS account still avoids cross-account IAM.
+3. **Region.** Lightsail is regional. Put the instance in `eu-central-1` next to the log bucket; CloudFront metrics stay `us-east-1` / `Region=Global` as they are now.
+4. **DNS ownership.** A records can live in hub Terraform if you pass `hosted_zone_id`, or stay in `prj--personal-portfolio--v3` prod. Pick one so you do not fight over the zone.
+
+So: Terraform for instance + static IP + ports + DNS; Compose for Traefik and everything that comes in Phases 2–6. That matches the Phase 1 exit gate (`https://status.paulserban.eu` with TLS) without standing up EC2/VPC.
+
 ---
 
 ## Phase 2 — Privacy-Friendly Page Analytics (client-side)
