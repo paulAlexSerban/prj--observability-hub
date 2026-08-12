@@ -17,12 +17,12 @@ In the Cloudflare dashboard: **Analytics & Logs → Web Analytics → Add a site
 
 Add **one site per production hostname** (do not share a token across surfaces):
 
-| Hostname | App | SPA? |
-| --- | --- | --- |
-| `paulserban.eu` | `frontend/sites/portfolio-site` | no |
-| `blog.paulserban.eu` | `frontend/sites/blog-site` | no |
-| `news-feed.paulserban.eu` | `frontend/sites/news-feed-site` | no |
-| `quiz.paulserban.eu` | `frontend/apps/quiz-web-app` | **yes** (`spa: true`) |
+| Hostname                  | App                             | SPA?                  |
+| ------------------------- | ------------------------------- | --------------------- |
+| `paulserban.eu`           | `frontend/sites/portfolio-site` | no                    |
+| `blog.paulserban.eu`      | `frontend/sites/blog-site`      | no                    |
+| `news-feed.paulserban.eu` | `frontend/sites/news-feed-site` | no                    |
+| `quiz.paulserban.eu`      | `frontend/apps/quiz-web-app`    | **yes** (`spa: true`) |
 
 For each: hostname → Done → **Manage site** → copy the JS snippet / token.
 
@@ -38,12 +38,12 @@ Snippets are already in the four apps. Tokens end up in public HTML — still do
 
 GitHub → `prj--personal-portfolio--v3` → Settings → Environments → **`production`** → Environment **variables** (not secrets):
 
-| Variable | App |
-| --- | --- |
+| Variable                    | App                                       |
+| --------------------------- | ----------------------------------------- |
 | `CF_BEACON_TOKEN_PORTFOLIO` | portfolio-site → `PUBLIC_CF_BEACON_TOKEN` |
-| `CF_BEACON_TOKEN_BLOG` | blog-site → `PUBLIC_CF_BEACON_TOKEN` |
-| `CF_BEACON_TOKEN_NEWS` | news-feed-site → `PUBLIC_CF_BEACON_TOKEN` |
-| `CF_BEACON_TOKEN_QUIZ` | quiz-web-app → `VITE_CF_BEACON_TOKEN` |
+| `CF_BEACON_TOKEN_BLOG`      | blog-site → `PUBLIC_CF_BEACON_TOKEN`      |
+| `CF_BEACON_TOKEN_NEWS`      | news-feed-site → `PUBLIC_CF_BEACON_TOKEN` |
+| `CF_BEACON_TOKEN_QUIZ`      | quiz-web-app → `VITE_CF_BEACON_TOKEN`     |
 
 Leave all four **unset** on `dev`, `test`, `stage`. Unset = no script tag = no pollution.
 
