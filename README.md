@@ -1,6 +1,6 @@
 # Observability Stack
 
-Self-hosted observability, analytics, and monitoring for my online projects - currently covering **paulserban.eu**, **blog.paulserban.eu**, and **quiz.paulserban.eu** (all Astro SSG, hosted on AWS S3 + CloudFront + Route53), designed to extend to any future project without re-architecting.
+Self-hosted observability, analytics, and monitoring for my online projects - currently covering **paulserban.eu**, **blog.paulserban.eu**, **quiz.paulserban.eu**, and **news-feed.paulserban.eu** (Astro SSG / SPA, hosted on AWS S3 + CloudFront + Route53), designed to extend to any future project without re-architecting.
 
 ## Goals
 
@@ -40,7 +40,7 @@ infrastructure/
 _docs/          # spikes, phased plan, ADRs
 ```
 
-CloudFront access logging (shared log bucket + `logging_config` on site/blog/quiz) lives in `prj--personal-portfolio--v3` Terraform, which owns the distributions.
+CloudFront access logging (shared log bucket + `logging_config` on site/blog/quiz/news) lives in `prj--personal-portfolio--v3` Terraform, which owns the distributions.
 
 ## Implementation Plan
 
@@ -60,7 +60,7 @@ Phase 0 requires no hosting spend - it validates the CDN-analytics approach enti
 
 ## Getting Started (Phase 0)
 
-1. Enable CloudFront access logging to the shared S3 bucket (already applied in `prj--personal-portfolio--v3` prod for site/blog/quiz).
+1. Enable CloudFront access logging to the shared S3 bucket (already applied in `prj--personal-portfolio--v3` prod for site/blog/quiz/news-feed).
 2. Apply the read-only IAM user and copy keys into local env:
    ```bash
    cd infrastructure/aws && terraform apply
@@ -71,7 +71,7 @@ Phase 0 requires no hosting spend - it validates the CDN-analytics approach enti
    ```bash
    make compose_up
    # http://127.0.0.1:3000  (admin / value of GRAFANA_ADMIN_PASSWORD)
-   # Dashboards: CloudFront overview (metrics) + CloudFront access logs (Loki)
+   # Dashboards: CloudFront health (metrics + ops) + CloudFront traffic (Loki)
    ```
 4. Optional — ad-hoc SQL with clickhouse-local (CLI, not Grafana):
    ```bash
@@ -82,13 +82,14 @@ Phase 0 requires no hosting spend - it validates the CDN-analytics approach enti
    ./scripts/query.sh unique-ips
    ./scripts/query.sh top-ips
    ./scripts/query.sh edge-pops blog.paulserban.eu
+   ./scripts/query.sh top-paths news-feed.paulserban.eu
    ```
 
 More detail: [`infrastructure/local/README.md`](infrastructure/local/README.md). Exit criteria for this phase are in the phased plan doc.
 
 ## Scope
 
-Initial rollout targets the three Astro sites above. The stack is intentionally domain-agnostic (Umami/Uptime Kuma/Grafana all support multiple sites per instance), so adding a new project later means adding a site entry and a monitor, not standing up new infrastructure.
+Initial rollout targets the four sites above. The stack is intentionally domain-agnostic (Umami/Uptime Kuma/Grafana all support multiple sites per instance), so adding a new project later means adding a site entry and a monitor, not standing up new infrastructure.
 
 ## License
 

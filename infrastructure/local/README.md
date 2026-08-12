@@ -4,7 +4,7 @@ Local-only Grafana + Loki (CloudFront access logs) + clickhouse-local (ad-hoc SQ
 
 ## Prerequisites
 
-1. CloudFront access logging enabled (done in `prj--personal-portfolio--v3` prod).
+1. CloudFront access logging enabled for site/blog/quiz/news-feed (done in `prj--personal-portfolio--v3` prod).
 2. Read-only IAM key applied from `../aws` and copied into `.env`.
 
 ```bash
@@ -37,10 +37,9 @@ First sync + Alloy ingest usually finishes within a few minutes of `up`.
 
 ## Grafana dashboards
 
-- **CloudFront overview** — CloudWatch metrics (requests, 4xx/5xx, bytes) plus **cache hit rate from Loki access logs** (free stand-in for paid CloudWatch `CacheHitRate`).
-- **CloudFront access logs** — Loki aggregations (volume by site, status codes, cache `result_type`, top paths, internal/external referrers, edge POPs, client IPs, raw logs).
-  - Edge POP codes (e.g. `IAD55-P9`) are metro/airport style, not country.
-  - Unique IP count in Grafana is approximate (series count); use clickhouse `unique-ips` for exact.
+- **CloudFront health** (`cloudfront-overview`) — CDN glance view: CloudWatch KPIs (requests, 4xx/5xx, bytes), Loki cache hit %, result types, top error paths, top cache-miss paths. Site variable filters Loki panels; CloudWatch shows all four distributions (paulserban.eu, blog, quiz, news-feed).
+- **CloudFront traffic** (`cloudfront-access-logs`) — Content vs asset paths, bytes by path, referrer **hosts** (internal/external), direct vs referred, collapsed forensics (IPs, 404s, raw logs).
+  - Exact unique IPs / edge POPs: ClickHouse CLI only (`./scripts/query.sh unique-ips`, `top-ips`, `edge-pops`) — not Grafana.
 
 ## clickhouse-local (ad-hoc SQL, CLI only)
 
@@ -55,6 +54,7 @@ Grafana does **not** use ClickHouse — that stays a one-shot CLI for SQL explor
 ./scripts/query.sh unique-ips
 ./scripts/query.sh top-ips
 ./scripts/query.sh edge-pops
+./scripts/query.sh top-paths news-feed.paulserban.eu
 ```
 
 CloudFront standard logs often take a while to appear after logging is first enabled — empty results shortly after apply are expected.

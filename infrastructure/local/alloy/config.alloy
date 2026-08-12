@@ -18,6 +18,11 @@ local.file_match "cloudfront" {
 			job      = "cloudfront",
 			site     = "quiz.paulserban.eu",
 		},
+		{
+			__path__ = "/logs/news-feed.paulserban.eu/**/*.gz",
+			job      = "cloudfront",
+			site     = "news-feed.paulserban.eu",
+		},
 	]
 
 	sync_period = "30s"

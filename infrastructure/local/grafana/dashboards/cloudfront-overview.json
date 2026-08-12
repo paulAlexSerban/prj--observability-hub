@@ -15,39 +15,727 @@
       }
     ]
   },
+  "description": "CDN health: CloudWatch metrics + Loki cache/error/miss ops. Cross-link: CloudFront traffic.",
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 1,
-  "links": [],
+  "links": [
+    {
+      "asDropdown": false,
+      "icon": "dashboard",
+      "includeVars": true,
+      "keepTime": true,
+      "tags": [],
+      "targetBlank": false,
+      "title": "CloudFront traffic",
+      "tooltip": "Traffic / debug (paths, referrers, forensics)",
+      "type": "link",
+      "url": "/d/cloudfront-access-logs"
+    }
+  ],
   "panels": [
     {
       "datasource": {
         "type": "cloudwatch",
         "uid": "cloudwatch"
       },
-      "description": "CloudFront Requests per site (us-east-1 / Region=Global).",
+      "description": "CloudWatch Requests Sum (all distributions).",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 0
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 5,
+        "x": 0,
+        "y": 0
+      },
+      "id": 1,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "sum"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 0,
+          "namespace": "AWS/CloudFront",
+          "metricName": "Requests",
+          "dimensions": {
+            "DistributionId": [
+              "E23PAQJ8T46O9C"
+            ],
+            "Region": [
+              "Global"
+            ]
+          },
+          "matchExact": true,
+          "statistic": "Sum",
+          "period": "300",
+          "region": "us-east-1",
+          "label": "paulserban.eu"
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 0,
+          "namespace": "AWS/CloudFront",
+          "metricName": "Requests",
+          "dimensions": {
+            "DistributionId": [
+              "E1V44X4FXZUKSR"
+            ],
+            "Region": [
+              "Global"
+            ]
+          },
+          "matchExact": true,
+          "statistic": "Sum",
+          "period": "300",
+          "region": "us-east-1",
+          "label": "blog.paulserban.eu"
+        },
+        {
+          "refId": "C",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 0,
+          "namespace": "AWS/CloudFront",
+          "metricName": "Requests",
+          "dimensions": {
+            "DistributionId": [
+              "E1GGJ55TOMLCNY"
+            ],
+            "Region": [
+              "Global"
+            ]
+          },
+          "matchExact": true,
+          "statistic": "Sum",
+          "period": "300",
+          "region": "us-east-1",
+          "label": "quiz.paulserban.eu"
+        },
+        {
+          "refId": "D",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 0,
+          "namespace": "AWS/CloudFront",
+          "metricName": "Requests",
+          "dimensions": {
+            "DistributionId": [
+              "E25T4L8ZU09851"
+            ],
+            "Region": [
+              "Global"
+            ]
+          },
+          "matchExact": true,
+          "statistic": "Sum",
+          "period": "300",
+          "region": "us-east-1",
+          "label": "news-feed.paulserban.eu"
+        }
+      ],
+      "title": "Requests",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "cloudwatch",
+        "uid": "cloudwatch"
+      },
+      "description": "CloudWatch 4xxErrorRate Average.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 0
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 5,
+        "y": 0
+      },
+      "id": 2,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "mean"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 0,
+          "namespace": "AWS/CloudFront",
+          "metricName": "4xxErrorRate",
+          "dimensions": {
+            "DistributionId": [
+              "E23PAQJ8T46O9C"
+            ],
+            "Region": [
+              "Global"
+            ]
+          },
+          "matchExact": true,
+          "statistic": "Average",
+          "period": "300",
+          "region": "us-east-1",
+          "label": "paulserban.eu"
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 0,
+          "namespace": "AWS/CloudFront",
+          "metricName": "4xxErrorRate",
+          "dimensions": {
+            "DistributionId": [
+              "E1V44X4FXZUKSR"
+            ],
+            "Region": [
+              "Global"
+            ]
+          },
+          "matchExact": true,
+          "statistic": "Average",
+          "period": "300",
+          "region": "us-east-1",
+          "label": "blog.paulserban.eu"
+        },
+        {
+          "refId": "C",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 0,
+          "namespace": "AWS/CloudFront",
+          "metricName": "4xxErrorRate",
+          "dimensions": {
+            "DistributionId": [
+              "E1GGJ55TOMLCNY"
+            ],
+            "Region": [
+              "Global"
+            ]
+          },
+          "matchExact": true,
+          "statistic": "Average",
+          "period": "300",
+          "region": "us-east-1",
+          "label": "quiz.paulserban.eu"
+        },
+        {
+          "refId": "D",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 0,
+          "namespace": "AWS/CloudFront",
+          "metricName": "4xxErrorRate",
+          "dimensions": {
+            "DistributionId": [
+              "E25T4L8ZU09851"
+            ],
+            "Region": [
+              "Global"
+            ]
+          },
+          "matchExact": true,
+          "statistic": "Average",
+          "period": "300",
+          "region": "us-east-1",
+          "label": "news-feed.paulserban.eu"
+        }
+      ],
+      "title": "4xx rate",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "cloudwatch",
+        "uid": "cloudwatch"
+      },
+      "description": "CloudWatch 5xxErrorRate Average.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 0
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 9,
+        "y": 0
+      },
+      "id": 3,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "mean"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 0,
+          "namespace": "AWS/CloudFront",
+          "metricName": "5xxErrorRate",
+          "dimensions": {
+            "DistributionId": [
+              "E23PAQJ8T46O9C"
+            ],
+            "Region": [
+              "Global"
+            ]
+          },
+          "matchExact": true,
+          "statistic": "Average",
+          "period": "300",
+          "region": "us-east-1",
+          "label": "paulserban.eu"
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 0,
+          "namespace": "AWS/CloudFront",
+          "metricName": "5xxErrorRate",
+          "dimensions": {
+            "DistributionId": [
+              "E1V44X4FXZUKSR"
+            ],
+            "Region": [
+              "Global"
+            ]
+          },
+          "matchExact": true,
+          "statistic": "Average",
+          "period": "300",
+          "region": "us-east-1",
+          "label": "blog.paulserban.eu"
+        },
+        {
+          "refId": "C",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 0,
+          "namespace": "AWS/CloudFront",
+          "metricName": "5xxErrorRate",
+          "dimensions": {
+            "DistributionId": [
+              "E1GGJ55TOMLCNY"
+            ],
+            "Region": [
+              "Global"
+            ]
+          },
+          "matchExact": true,
+          "statistic": "Average",
+          "period": "300",
+          "region": "us-east-1",
+          "label": "quiz.paulserban.eu"
+        },
+        {
+          "refId": "D",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 0,
+          "namespace": "AWS/CloudFront",
+          "metricName": "5xxErrorRate",
+          "dimensions": {
+            "DistributionId": [
+              "E25T4L8ZU09851"
+            ],
+            "Region": [
+              "Global"
+            ]
+          },
+          "matchExact": true,
+          "statistic": "Average",
+          "period": "300",
+          "region": "us-east-1",
+          "label": "news-feed.paulserban.eu"
+        }
+      ],
+      "title": "5xx rate",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "description": "Hit / (Hit+Miss+RefreshHit) from access logs.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 0
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 5,
+        "x": 13,
+        "y": 0
+      },
+      "id": 4,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "mean"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "loki"
+          },
+          "editorMode": "code",
+          "expr": "sum by (site) (count_over_time({job=\"cloudfront\", site=~\"$site\", result_type=\"Hit\"} [$__range])) / sum by (site) (count_over_time({job=\"cloudfront\", site=~\"$site\", result_type=~\"Hit|Miss|RefreshHit\"} [$__range])) * 100",
+          "legendFormat": "{{site}}",
+          "queryType": "instant",
+          "refId": "A"
+        }
+      ],
+      "title": "Cache hit %",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "cloudwatch",
+        "uid": "cloudwatch"
+      },
+      "description": "CloudWatch BytesDownloaded Sum.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 0
+              }
+            ]
+          },
+          "unit": "decbytes"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 18,
+        "y": 0
+      },
+      "id": 5,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "sum"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 0,
+          "namespace": "AWS/CloudFront",
+          "metricName": "BytesDownloaded",
+          "dimensions": {
+            "DistributionId": [
+              "E23PAQJ8T46O9C"
+            ],
+            "Region": [
+              "Global"
+            ]
+          },
+          "matchExact": true,
+          "statistic": "Sum",
+          "period": "300",
+          "region": "us-east-1",
+          "label": "paulserban.eu"
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 0,
+          "namespace": "AWS/CloudFront",
+          "metricName": "BytesDownloaded",
+          "dimensions": {
+            "DistributionId": [
+              "E1V44X4FXZUKSR"
+            ],
+            "Region": [
+              "Global"
+            ]
+          },
+          "matchExact": true,
+          "statistic": "Sum",
+          "period": "300",
+          "region": "us-east-1",
+          "label": "blog.paulserban.eu"
+        },
+        {
+          "refId": "C",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 0,
+          "namespace": "AWS/CloudFront",
+          "metricName": "BytesDownloaded",
+          "dimensions": {
+            "DistributionId": [
+              "E1GGJ55TOMLCNY"
+            ],
+            "Region": [
+              "Global"
+            ]
+          },
+          "matchExact": true,
+          "statistic": "Sum",
+          "period": "300",
+          "region": "us-east-1",
+          "label": "quiz.paulserban.eu"
+        },
+        {
+          "refId": "D",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 0,
+          "namespace": "AWS/CloudFront",
+          "metricName": "BytesDownloaded",
+          "dimensions": {
+            "DistributionId": [
+              "E25T4L8ZU09851"
+            ],
+            "Region": [
+              "Global"
+            ]
+          },
+          "matchExact": true,
+          "statistic": "Sum",
+          "period": "300",
+          "region": "us-east-1",
+          "label": "news-feed.paulserban.eu"
+        }
+      ],
+      "title": "Bytes downloaded",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "cloudwatch",
+        "uid": "cloudwatch"
+      },
+      "description": "CloudWatch Requests (authoritative; no Loki lag).",
       "fieldConfig": {
         "defaults": {
           "color": {
             "mode": "palette-classic"
           },
           "custom": {
-            "axisBorderShow": false,
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
             "drawStyle": "line",
             "fillOpacity": 15,
             "lineInterpolation": "smooth",
             "lineWidth": 2,
-            "pointSize": 5,
             "showPoints": "never",
             "spanNulls": true,
             "stacking": {
               "group": "A",
               "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
             }
           },
           "unit": "short"
@@ -58,9 +746,9 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 0
+        "y": 4
       },
-      "id": 1,
+      "id": 6,
       "options": {
         "legend": {
           "calcs": [
@@ -151,9 +839,34 @@
           "period": "300",
           "region": "us-east-1",
           "label": "quiz.paulserban.eu"
+        },
+        {
+          "refId": "D",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 0,
+          "namespace": "AWS/CloudFront",
+          "metricName": "Requests",
+          "dimensions": {
+            "DistributionId": [
+              "E25T4L8ZU09851"
+            ],
+            "Region": [
+              "Global"
+            ]
+          },
+          "matchExact": true,
+          "statistic": "Sum",
+          "period": "300",
+          "region": "us-east-1",
+          "label": "news-feed.paulserban.eu"
         }
       ],
-      "title": "Requests",
+      "title": "Requests over time",
       "type": "timeseries"
     },
     {
@@ -161,6 +874,7 @@
         "type": "cloudwatch",
         "uid": "cloudwatch"
       },
+      "description": "CloudWatch 4xxErrorRate by site.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -178,9 +892,9 @@
               "mode": "none"
             }
           },
+          "unit": "percent",
           "max": 100,
-          "min": 0,
-          "unit": "percent"
+          "min": 0
         },
         "overrides": []
       },
@@ -188,9 +902,9 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 0
+        "y": 4
       },
-      "id": 2,
+      "id": 7,
       "options": {
         "legend": {
           "calcs": [
@@ -230,7 +944,7 @@
           "statistic": "Average",
           "period": "300",
           "region": "us-east-1",
-          "label": "paulserban.eu 4xx"
+          "label": "paulserban.eu"
         },
         {
           "refId": "B",
@@ -255,7 +969,7 @@
           "statistic": "Average",
           "period": "300",
           "region": "us-east-1",
-          "label": "blog.paulserban.eu 4xx"
+          "label": "blog.paulserban.eu"
         },
         {
           "refId": "C",
@@ -280,7 +994,7 @@
           "statistic": "Average",
           "period": "300",
           "region": "us-east-1",
-          "label": "quiz.paulserban.eu 4xx"
+          "label": "quiz.paulserban.eu"
         },
         {
           "refId": "D",
@@ -292,10 +1006,10 @@
           "metricQueryType": 0,
           "metricEditorMode": 0,
           "namespace": "AWS/CloudFront",
-          "metricName": "5xxErrorRate",
+          "metricName": "4xxErrorRate",
           "dimensions": {
             "DistributionId": [
-              "E23PAQJ8T46O9C"
+              "E25T4L8ZU09851"
             ],
             "Region": [
               "Global"
@@ -305,60 +1019,10 @@
           "statistic": "Average",
           "period": "300",
           "region": "us-east-1",
-          "label": "paulserban.eu 5xx"
-        },
-        {
-          "refId": "E",
-          "datasource": {
-            "type": "cloudwatch",
-            "uid": "cloudwatch"
-          },
-          "queryMode": "Metrics",
-          "metricQueryType": 0,
-          "metricEditorMode": 0,
-          "namespace": "AWS/CloudFront",
-          "metricName": "5xxErrorRate",
-          "dimensions": {
-            "DistributionId": [
-              "E1V44X4FXZUKSR"
-            ],
-            "Region": [
-              "Global"
-            ]
-          },
-          "matchExact": true,
-          "statistic": "Average",
-          "period": "300",
-          "region": "us-east-1",
-          "label": "blog.paulserban.eu 5xx"
-        },
-        {
-          "refId": "F",
-          "datasource": {
-            "type": "cloudwatch",
-            "uid": "cloudwatch"
-          },
-          "queryMode": "Metrics",
-          "metricQueryType": 0,
-          "metricEditorMode": 0,
-          "namespace": "AWS/CloudFront",
-          "metricName": "5xxErrorRate",
-          "dimensions": {
-            "DistributionId": [
-              "E1GGJ55TOMLCNY"
-            ],
-            "Region": [
-              "Global"
-            ]
-          },
-          "matchExact": true,
-          "statistic": "Average",
-          "period": "300",
-          "region": "us-east-1",
-          "label": "quiz.paulserban.eu 5xx"
+          "label": "news-feed.paulserban.eu"
         }
       ],
-      "title": "Error rates (4xx / 5xx)",
+      "title": "4xx error rate",
       "type": "timeseries"
     },
     {
@@ -366,6 +1030,7 @@
         "type": "cloudwatch",
         "uid": "cloudwatch"
       },
+      "description": "CloudWatch 5xxErrorRate by site.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -383,7 +1048,9 @@
               "mode": "none"
             }
           },
-          "unit": "decbytes"
+          "unit": "percent",
+          "max": 100,
+          "min": 0
         },
         "overrides": []
       },
@@ -391,13 +1058,14 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 8
+        "y": 12
       },
-      "id": 3,
+      "id": 8,
       "options": {
         "legend": {
           "calcs": [
-            "sum"
+            "mean",
+            "max"
           ],
           "displayMode": "table",
           "placement": "bottom",
@@ -419,7 +1087,7 @@
           "metricQueryType": 0,
           "metricEditorMode": 0,
           "namespace": "AWS/CloudFront",
-          "metricName": "BytesDownloaded",
+          "metricName": "5xxErrorRate",
           "dimensions": {
             "DistributionId": [
               "E23PAQJ8T46O9C"
@@ -429,7 +1097,7 @@
             ]
           },
           "matchExact": true,
-          "statistic": "Sum",
+          "statistic": "Average",
           "period": "300",
           "region": "us-east-1",
           "label": "paulserban.eu"
@@ -444,7 +1112,7 @@
           "metricQueryType": 0,
           "metricEditorMode": 0,
           "namespace": "AWS/CloudFront",
-          "metricName": "BytesDownloaded",
+          "metricName": "5xxErrorRate",
           "dimensions": {
             "DistributionId": [
               "E1V44X4FXZUKSR"
@@ -454,7 +1122,7 @@
             ]
           },
           "matchExact": true,
-          "statistic": "Sum",
+          "statistic": "Average",
           "period": "300",
           "region": "us-east-1",
           "label": "blog.paulserban.eu"
@@ -469,7 +1137,7 @@
           "metricQueryType": 0,
           "metricEditorMode": 0,
           "namespace": "AWS/CloudFront",
-          "metricName": "BytesDownloaded",
+          "metricName": "5xxErrorRate",
           "dimensions": {
             "DistributionId": [
               "E1GGJ55TOMLCNY"
@@ -479,13 +1147,38 @@
             ]
           },
           "matchExact": true,
-          "statistic": "Sum",
+          "statistic": "Average",
           "period": "300",
           "region": "us-east-1",
           "label": "quiz.paulserban.eu"
+        },
+        {
+          "refId": "D",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 0,
+          "namespace": "AWS/CloudFront",
+          "metricName": "5xxErrorRate",
+          "dimensions": {
+            "DistributionId": [
+              "E25T4L8ZU09851"
+            ],
+            "Region": [
+              "Global"
+            ]
+          },
+          "matchExact": true,
+          "statistic": "Average",
+          "period": "300",
+          "region": "us-east-1",
+          "label": "news-feed.paulserban.eu"
         }
       ],
-      "title": "Bytes downloaded",
+      "title": "5xx error rate",
       "type": "timeseries"
     },
     {
@@ -493,7 +1186,7 @@
         "type": "loki",
         "uid": "loki"
       },
-      "description": "Cache hit % from CloudFront access logs (x-edge-result-type). Hit / (Hit+Miss+RefreshHit). Free alternative to CloudWatch CacheHitRate (paid additional metrics).",
+      "description": "Free stand-in for paid CloudWatch CacheHitRate.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -511,26 +1204,9 @@
               "mode": "none"
             }
           },
-          "max": 100,
-          "min": 0,
           "unit": "percent",
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "red",
-                "value": null
-              },
-              {
-                "color": "yellow",
-                "value": 70
-              },
-              {
-                "color": "green",
-                "value": 90
-              }
-            ]
-          }
+          "max": 100,
+          "min": 0
         },
         "overrides": []
       },
@@ -538,9 +1214,9 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 8
+        "y": 12
       },
-      "id": 4,
+      "id": 9,
       "options": {
         "legend": {
           "calcs": [
@@ -558,19 +1234,223 @@
       },
       "targets": [
         {
-          "refId": "A",
           "datasource": {
             "type": "loki",
             "uid": "loki"
           },
           "editorMode": "code",
-          "expr": "sum by (site) (count_over_time({job=\"cloudfront\", result_type=\"Hit\"} [$__interval])) / sum by (site) (count_over_time({job=\"cloudfront\", result_type=~\"Hit|Miss|RefreshHit\"} [$__interval])) * 100",
+          "expr": "sum by (site) (count_over_time({job=\"cloudfront\", site=~\"$site\", result_type=\"Hit\"} [$__interval])) / sum by (site) (count_over_time({job=\"cloudfront\", site=~\"$site\", result_type=~\"Hit|Miss|RefreshHit\"} [$__interval])) * 100",
           "legendFormat": "{{site}}",
-          "queryType": "range"
+          "queryType": "range",
+          "refId": "A"
         }
       ],
       "title": "Cache hit rate (from access logs)",
       "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "description": "x-edge-result-type counts including Error / LimitExceeded / CapacityExceeded.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 0,
+        "y": 20
+      },
+      "id": 10,
+      "options": {
+        "displayMode": "table",
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "sum"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showUnfilled": true,
+        "sizing": "auto",
+        "valueMode": "color"
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "loki"
+          },
+          "editorMode": "code",
+          "expr": "sum by (result_type) (count_over_time({job=\"cloudfront\", site=~\"$site\"} [$__range]))",
+          "legendFormat": "{{result_type}}",
+          "queryType": "instant",
+          "refId": "A"
+        }
+      ],
+      "title": "Result types",
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "description": "Broken links, old slugs, bot probes.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 8,
+        "y": 20
+      },
+      "id": 11,
+      "options": {
+        "displayMode": "table",
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "sum"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showUnfilled": true,
+        "sizing": "auto",
+        "valueMode": "color"
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "loki"
+          },
+          "editorMode": "code",
+          "expr": "topk(20, sum by (path) (count_over_time({job=\"cloudfront\", site=~\"$site\", status=~\"4..|5..\"} | logfmt | keep path | path != \"\" [$__range])))",
+          "legendFormat": "{{path}}",
+          "queryType": "instant",
+          "refId": "A"
+        }
+      ],
+      "title": "Top 20 error paths (4xx/5xx)",
+      "type": "bargauge"
+    },
+    {
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "description": "Paths punching through to S3.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 16,
+        "y": 20
+      },
+      "id": 12,
+      "options": {
+        "displayMode": "table",
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "sum"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showUnfilled": true,
+        "sizing": "auto",
+        "valueMode": "color"
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "loki"
+          },
+          "editorMode": "code",
+          "expr": "topk(20, sum by (path) (count_over_time({job=\"cloudfront\", site=~\"$site\", result_type=\"Miss\"} | logfmt | keep path | path != \"\" [$__range])))",
+          "legendFormat": "{{path}}",
+          "queryType": "instant",
+          "refId": "A"
+        }
+      ],
+      "title": "Top 20 cache-miss paths",
+      "type": "table"
     }
   ],
   "refresh": "5m",
@@ -578,10 +1458,36 @@
   "tags": [
     "cloudfront",
     "phase-0",
-    "aws"
+    "aws",
+    "health"
   ],
   "templating": {
-    "list": []
+    "list": [
+      {
+        "allValue": ".+",
+        "current": {
+          "selected": true,
+          "text": "All",
+          "value": "$__all"
+        },
+        "datasource": {
+          "type": "loki",
+          "uid": "loki"
+        },
+        "definition": "label_values(site)",
+        "includeAll": true,
+        "label": "Site",
+        "multi": true,
+        "name": "site",
+        "options": [],
+        "query": "label_values({job=\"cloudfront\"}, site)",
+        "refresh": 2,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 1,
+        "type": "query"
+      }
+    ]
   },
   "time": {
     "from": "now-7d",
@@ -589,7 +1495,7 @@
   },
   "timepicker": {},
   "timezone": "browser",
-  "title": "CloudFront overview",
+  "title": "CloudFront health",
   "uid": "cloudfront-overview",
-  "version": 6
+  "version": 8
 }
