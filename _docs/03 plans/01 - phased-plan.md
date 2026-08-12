@@ -68,9 +68,33 @@
 
 ---
 
+## Phase 0b — Cloudflare Web Analytics (no VPS, $0 hosting)
+
+**Does not wait on Phase 1.** Visitor analytics is a JS beacon, not a container. Shipping it after Lightsail would couple a product question to a hosting invoice.
+
+See [`ADR-003`](../02%20architecture-knowledge-management/adr--003--cloudflare-web-analytics.md) and the how-to: [`02 - adding-cloudflare-web-analytics.md`](./02%20-%20adding-cloudflare-web-analytics.md).
+
+**Objective:** Page views, referrers, and coarse Core Web Vitals from real browsers, across all four production hostnames, with no cookie banner and no VPS.
+
+**Deliverables:**
+- One Cloudflare Web Analytics site (token) per production hostname — `paulserban.eu`, `blog.`, `quiz.`, `news-feed.`
+- Manual JS snippet (sites are CloudFront, **not** orange-cloud — auto-inject will not run)
+- Astro: env-gated snippet in each `BaseTemplate.astro` (`PUBLIC_CF_BEACON_TOKEN`)
+- Quiz PWA: inject from `main.tsx` with `"spa": true` (`VITE_CF_BEACON_TOKEN`)
+- Tokens only on **production** CI; local / DEV / TEST / STAGE unset
+- Verify a real page view per hostname in the Cloudflare dashboard
+
+**Exit gate:** Cloudflare dashboard shows at least one real visit per production hostname; non-prod hosts show none.
+
+**Why this is not Phase 2:** Umami still owns the "we hold the event rows" story. Cloudflare is the bridge so that question is not unanswered until a box exists. Data leaves the AWS account; there is no API into Grafana. Named, not accidental.
+
+**Overlap with Phase 3:** the beacon already reports LCP / INP / CLS (Chromium-first). Do not add a second `web-vitals` pipeline until Cloudflare's view is insufficient.
+
+---
+
 ## Phase 1 — VPS Decision & Platform Foundation
 
-**Objective:** Pick hosting for the pieces that *must* be public and always-on (visitor analytics beacon, uptime checks pinging from outside your network, RUM ingestion), then stand up the base platform there.
+**Objective:** Pick hosting for the pieces that *must* be public and always-on (uptime checks from outside your network, later Umami / Grafana). Visitor analytics no longer waits on this box — that is Phase 0b. Then stand up the base platform.
 
 **VPS options considered** (Hetzner's Cost-Optimized/CX tier is currently stock-constrained — availability depends on Hetzner having reduced-cost hardware on hand, so Regular Performance is what's actually orderable most of the time right now):
 
@@ -118,32 +142,37 @@ So: Terraform for instance + static IP + ports + DNS; Compose for Traefik and ev
 
 ---
 
-## Phase 2 — Privacy-Friendly Page Analytics (client-side)
+## Phase 2 — Privacy-Friendly Page Analytics (self-hosted Umami)
 
-**Objective:** Page views, referrers, and visitor counts without cookie banners, across all three domains.
+**Objective:** Own page-view data (not only Cloudflare's dashboard) across all four domains, still without a cookie banner.
 
 **Deliverables:**
 - Umami + Postgres added to `docker-compose.yml`, Traefik labels routing `analytics.paulserban.eu`
-- One Umami site entry per domain (paulserban.eu, blog, quiz)
-- Tracking snippet added to Astro's shared layout (single include point, not per-page)
+- One Umami site entry per domain (paulserban.eu, blog, quiz, news-feed)
+- Tracking snippet added next to the Cloudflare beacon (same layout include points) — env-gated, prod-only
 - Verify events land for at least one real page view per domain
+- After ~7 days of overlap, decide keep / drop Cloudflare Web Analytics (ADR-003 revisit)
 
-**Exit gate:** Dashboard shows live traffic for all three domains with no cookie consent banner required.
+**Exit gate:** Umami dashboard shows live traffic for all four domains with no cookie consent banner required.
+
+**Note:** Numbers will disagree with Cloudflare and with access logs. That is expected (JS vs JS-vendor vs CDN). Matching 1:1 means the pipeline is wrong.
 
 ---
 
 ## Phase 3 — Real User Monitoring / Core Web Vitals
 
-**Objective:** Know actual LCP/CLS/INP experienced by real visitors, not just lab/synthetic scores.
+**Objective:** Know actual LCP/CLS/INP experienced by real visitors, not just lab/synthetic scores — **in a system we own**, if Cloudflare's CWV view is not enough.
 
-**Deliverables:**
+**Default:** **skip or shrink.** Phase 0b already lands CWV in the Cloudflare dashboard. Do not dual-instrument.
+
+**If revisited (Umami live, or Cloudflare dropped / insufficient):**
 - `web-vitals` npm package in the Astro layout, sends a `navigator.sendBeacon` on each metric
 - Simplest ingestion path: post into Umami as a custom event (no new service); alternative is a small endpoint writing into Postgres/Loki for raw distributions
 - Grafana panel (or Umami custom-event view) showing P75 LCP/CLS/INP trend per domain
 
-**Exit gate:** A 7-day Core Web Vitals trend line is visible for at least one domain, sourced from real visits.
+**Exit gate (only if this phase runs):** A 7-day Core Web Vitals trend line is visible for at least one domain, sourced from real visits, **outside** the Cloudflare UI.
 
-**Note:** Datadog RUM was in the original notes as an option — skipped to stay inside the self-hosted/cheap constraint. Revisit only if you specifically want Datadog-unified dashboards for portfolio reasons.
+**Note:** Datadog RUM stays skipped. Cloudflare Web Analytics is the cheap RUM we actually turned on; Datadog would be the k8s mistake again.
 
 ---
 
@@ -196,12 +225,13 @@ So: Terraform for instance + static IP + ports + DNS; Compose for Traefik and ev
 
 | Phase | Concern                  | Hosting            | New services                             | Gate                                           |
 | ----- | ------------------------ | ------------------ | ---------------------------------------- | ---------------------------------------------- |
-| 0     | CDN/traffic validation   | Local machine, $0  | Grafana (local), Athena                  | Athena + local dashboard answer real questions |
+| 0     | CDN/traffic validation   | Local machine, $0  | Grafana (local), clickhouse-local, Loki  | Dashboard + SQL answer real CDN questions      |
+| 0b    | Visitor analytics + CWV  | Cloudflare SaaS, $0 | JS beacon in four apps                  | One real prod page view per hostname           |
 | 1     | VPS + platform           | VPS (chosen above) | Traefik                                  | TLS works, repo reproducible                   |
-| 2     | Page analytics           | VPS                | Umami + Postgres                         | Live traffic on all 3 domains                  |
-| 3     | RUM                      | VPS                | web-vitals beacon                        | 7-day CWV trend visible                        |
+| 2     | Owned page analytics     | VPS                | Umami + Postgres                         | Live traffic on all 4 domains; decide CF keep/drop |
+| 3     | Owned RUM (optional)     | VPS                | web-vitals beacon                        | Only if CF CWV is insufficient                 |
 | 4     | Uptime                   | VPS                | Uptime Kuma                              | Alert fires on test outage                     |
 | 5     | Infra + unified view     | VPS                | Prometheus, node_exporter, YACE, Grafana | One dashboard for VPS + CDN + CWV              |
 | 6     | Logs + errors (optional) | VPS                | Loki, Alloy, GlitchTip                   | Log search + JS error capture work             |
 
-Phase 0 costs nothing and de-risks the rest. Real hosting spend only starts at Phase 1, once the CDN-analytics approach is already proven to work.
+Phase 0 and 0b cost nothing in hosting and can run in parallel. Real VPS spend only starts at Phase 1.

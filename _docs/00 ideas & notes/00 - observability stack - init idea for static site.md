@@ -1,7 +1,8 @@
 **Analytics/tracking (privacy-friendly, cheap)**
 - **Cloudflare Web Analytics** — free, no cookies, just a JS snippet. Works fine even though you're on CloudFront (it's just client-side).
+  - **DECIDED (2026-08-12):** ship now as Phase 0b. Manual snippet (not orange-cloud auto-inject). See ADR-003 + `_docs/03 plans/02 - adding-cloudflare-web-analytics.md`. Umami stays the later self-hosted path; this is the $0 bridge.
 - **Plausible** — self-hosted (~$0 on a cheap VPS) or hosted ($9/mo). Very light.
-- **Umami** — self-hosted, free forever; Postgres/MySQL backend. Popular for exactly this stack.
+- **Umami** — self-hosted, free forever; Postgres/MySQL backend. Popular for exactly this stack. Phase 2 — data ownership, not the first visitor signal.
 - **GoatCounter** — free hosted tier or self-host, extremely lightweight, no cookie banner needed.
 
 

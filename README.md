@@ -5,18 +5,19 @@ Self-hosted observability, analytics, and monitoring for my online projects - cu
 ## Goals
 
 - Traffic and CDN visibility (requests, error rates, cache performance) without relying on the AWS console
-- Privacy-friendly page analytics - no cookie banners, no third-party data sharing
+- Privacy-friendly page analytics - no cookie banners; Cloudflare Web Analytics as a $0 bridge (Phase 0b), Umami later if we want to own the rows
 - Real User Monitoring for Core Web Vitals (LCP/CLS/INP) from actual visitors
 - Uptime monitoring, checked from outside my own network
 - Infra health (VPS resource usage) and, eventually, centralized logs and JS error tracking
-- All of it cheap and self-hosted - no per-seat SaaS pricing, no vendor lock-in
+- All of it cheap - no per-seat SaaS pricing. Self-hosted where it earns the VPS; Cloudflare Web Analytics is the explicit $0 exception (ADR-003).
 
 ## Architecture
 
 | Concern                | Tool                                  | Deployment          |
 | ---------------------- | ------------------------------------- | ------------------- |
 | Reverse proxy / TLS    | Traefik                               | VPS, Docker Compose |
-| Page analytics         | Umami + Postgres                      | VPS                 |
+| Page analytics (now)   | Cloudflare Web Analytics (JS beacon)  | Cloudflare, prod-only |
+| Page analytics (later) | Umami + Postgres                      | VPS                 |
 | Uptime monitoring      | Uptime Kuma                           | VPS                 |
 | Infra metrics          | Prometheus + node_exporter            | VPS                 |
 | CloudFront/S3 metrics  | Grafana CloudWatch data source / YACE | Local → VPS         |
@@ -30,6 +31,7 @@ Self-hosted observability, analytics, and monitoring for my online projects - cu
 - Docker Compose over Kubernetes - see [`ADR-001`](_docs/02 architecture-knowledge-management/adr--001--orchestration.md). Single-node, single-replica workloads don't justify an orchestrator's fixed resource/complexity tax.
 - Traefik over Caddy for reverse proxy - Docker-provider label-based routing, no shared config file to edit per service added.
 - clickhouse-local over Athena for Phase 0 ad-hoc SQL - see [`ADR-002`](_docs/02 architecture-knowledge-management/adr--002--query-engine.md). Grafana log UI uses Loki (Phase 6 practiced locally), not a ClickHouse server.
+- Cloudflare Web Analytics now, Umami later - see [`ADR-003`](_docs/02 architecture-knowledge-management/adr--003--cloudflare-web-analytics.md). Visitor analytics must not wait on a VPS. How-to: [`02 - adding-cloudflare-web-analytics.md`](_docs/03%20plans/02%20-%20adding-cloudflare-web-analytics.md).
 
 ## Repository layout
 
@@ -44,19 +46,20 @@ CloudFront access logging (shared log bucket + `logging_config` on site/blog/qui
 
 ## Implementation Plan
 
-Built out in gated phases - each phase has a fixed objective, concrete deliverables, and an exit gate before moving to the next. Full detail in [`01 - phased-plan.md`](./_docs/00 ideas & notes/01 - phased-plan.md).
+Built out in gated phases - each phase has a fixed objective, concrete deliverables, and an exit gate before moving to the next. Full detail in [`01 - phased-plan.md`](./_docs/03%20plans/01%20-%20phased-plan.md).
 
 | Phase | Concern                                                           | Hosting           | Status      |
 | ----- | ----------------------------------------------------------------- | ----------------- | ----------- |
 | 0     | Local AWS log aggregation (CloudWatch + Loki access logs + clickhouse-local CLI) | Local machine, $0 | Done        |
+| 0b    | Cloudflare Web Analytics (JS beacon, four prod hostnames)         | Cloudflare, $0    | Snippets in apps — add production env vars |
 | 1     | VPS provisioning + Traefik platform foundation                    | VPS               | Not started |
-| 2     | Privacy-friendly page analytics (Umami)                           | VPS               | Not started |
-| 3     | Real User Monitoring / Core Web Vitals                            | VPS               | Not started |
+| 2     | Owned page analytics (Umami)                                      | VPS               | Not started |
+| 3     | Owned RUM / Core Web Vitals (optional if CF CWV is enough)        | VPS               | Not started |
 | 4     | Uptime / synthetic monitoring (Uptime Kuma)                       | VPS               | Not started |
 | 5     | Infra metrics + unified Grafana dashboards                        | VPS               | Not started |
 | 6     | Log aggregation + error tracking (optional)                       | VPS               | Not started |
 
-Phase 0 requires no hosting spend - it validates the CDN-analytics approach entirely on a local machine before any VPS is provisioned.
+Phase 0 and 0b require no hosting spend. 0b how-to: [`02 - adding-cloudflare-web-analytics.md`](./_docs/03%20plans/02%20-%20adding-cloudflare-web-analytics.md). VPS spend starts at Phase 1.
 
 ## Getting Started (Phase 0)
 
