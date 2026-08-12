@@ -1,0 +1,16 @@
+apiVersion: 1
+
+datasources:
+  - name: CloudWatch
+    type: cloudwatch
+    access: proxy
+    uid: cloudwatch
+    isDefault: true
+    editable: false
+    jsonData:
+      authType: keys
+      # CloudFront metrics are published to us-east-1 (Region=Global dimension).
+      defaultRegion: us-east-1
+    secureJsonData:
+      accessKey: ${AWS_ACCESS_KEY_ID}
+      secretKey: ${AWS_SECRET_ACCESS_KEY}

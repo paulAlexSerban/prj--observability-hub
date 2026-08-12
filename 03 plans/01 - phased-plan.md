@@ -8,17 +8,56 @@
 
 ## Phase 0 — Local AWS Log Aggregation (no VPS, $0 hosting cost)
 
+```notes
+**CloudFront/S3-native telemetry (no extra JS)**
+- **CloudFront access logs → S3** — free to enable, pay only for S3 storage (pennies). Query with **Athena** (pay-per-query, ~$5/TB scanned) for real traffic analytics without any client-side script.
+- WON'T DO:**CloudFront real-time logs → Kinesis** if you want near-live dashboards, but this gets pricier — skip unless you need it.
+- **CloudWatch metrics** for CloudFront (requests, error rate, bytes) are free at the basic level, just not very granular.
+```
+
 **Objective:** Prove out CDN/traffic visibility using data AWS already has, entirely on your own machine, before renting anything.
 
 **Deliverables:**
 - CloudFront access logging enabled → dedicated S3 bucket (lifecycle rule to expire/transition old logs)
 - Local-only `docker-compose.yml` (runs on your dev machine, not exposed publicly) with Grafana connected via its **built-in CloudWatch data source** — no exporter needed for this step, just a read-only IAM key. This gives CloudFront requests/4xx/5xx/bytes dashboards immediately.
 - Athena table + saved queries over the access log bucket (top paths, status code breakdown, cache hit ratio, referrers) — serverless, pay-per-query, pennies at this data volume
+  - **Superseded for implementation by [`ADR-002`](../02%20architecture-knowledge-management/adr--002--query-engine.md):** Phase 0 uses **clickhouse-local** against the same S3 log bucket instead of Athena.
 - Optional: a local Loki instance + a one-off script pulling recent S3 access logs, if you want to practice log-query patterns before committing to always-on log shipping
 
 **Exit gate:** Local Grafana answers "is CloudFront serving cleanly this week" and a saved Athena query answers "top 10 paths and error rate, last 7 days" — both reproducible from a clean laptop, zero infrastructure rented.
 
 **Why this comes first:** everything in this phase is either free (CloudWatch metrics, local Docker) or pennies (Athena, S3 storage). It validates the CDN-analytics half of the stack and de-risks the rest before any VPS spend is committed.
+
+### Botes & Outcome
+1. CloudFront access logging (prj--personal-portfolio--v3)
+   - Shared bucket cf-access-logs.paulserban.eu (60-day lifecycle, log-delivery-write ACL)
+   - Optional logging_config on the static-site module
+   - Wired for site / blog / quiz in prod — applied successfully
+2. Read-only IAM (prj--observability-hub/infrastructure/aws)
+   - User observability-hub-readonly with CloudWatch + CloudFront list + S3 log-bucket read
+   - Access key written to gitignored infrastructure/local/.env
+3. Local Grafana (infrastructure/local)
+   - docker compose -f docker-compose.local.yml up -d → healthy on http://127.0.0.1:3000
+   - CloudWatch datasource provisioned; CloudFront overview dashboard loaded
+   - Live metric query against E23PAQJ8T46O9C succeeded
+4. clickhouse-local
+   - Queries: top-paths, status-breakdown, cache-hit-ratio, referrers
+   - Wrapper: ./scripts/query.sh <name> [prefix]
+   - Verified against live logs (e.g. top paths + ~84% 200s already present)
+5. Docs
+   - README Phase 0 → Done, Getting Started updated for clickhouse-local
+   - [ADR-002](prj--observability-hub/_docs/02 architecture-knowledge-management/adr--002--query-engine.md) records the Athena → clickhouse-local choice
+
+> Quick use
+> ```bash
+> # Grafana
+>   - cd prj--observability-hub/infrastructure/local
+>   - docker compose -f docker-compose.local.yml --env-file .env up -d
+>   - http://127.0.0.1:3000  (admin / admin)
+>   - Access-log SQL
+>   - ./scripts/query.sh top-paths
+>   - ./scripts/query.sh status-breakdown blog.paulserban.eu
+>   - Default Grafana password is in .env (GRAFANA_ADMIN_PASSWORD); change it if this machine isn’t private-only.
 
 ---
 

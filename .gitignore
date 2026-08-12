@@ -70,6 +70,17 @@ web_modules/
 .env.*
 !.env.example
 
+# Terraform
+**/.terraform/
+**/*.tfstate
+**/*.tfstate.*
+**/*.tfplan
+**/tfplan*
+**/crash.log
+**/crash.*.log
+# Keep provider lock files in git
+!**/.terraform.lock.hcl
+
 # parcel-bundler cache (https://parceljs.org/)
 .cache
 .parcel-cache

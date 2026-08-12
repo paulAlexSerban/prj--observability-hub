@@ -4,10 +4,7 @@
 - **Umami** — self-hosted, free forever; Postgres/MySQL backend. Popular for exactly this stack.
 - **GoatCounter** — free hosted tier or self-host, extremely lightweight, no cookie banner needed.
 
-**CloudFront/S3-native telemetry (no extra JS)**
-- **CloudFront access logs → S3** — free to enable, pay only for S3 storage (pennies). Query with **Athena** (pay-per-query, ~$5/TB scanned) for real traffic analytics without any client-side script.
-- **CloudFront real-time logs → Kinesis** if you want near-live dashboards, but this gets pricier — skip unless you need it.
-- **CloudWatch metrics** for CloudFront (requests, error rate, bytes) are free at the basic level, just not very granular.
+
 
 **Uptime/synthetic monitoring**
 - **UptimeRobot** — free tier (50 monitors, 5 min interval) covers a personal/portfolio site easily.

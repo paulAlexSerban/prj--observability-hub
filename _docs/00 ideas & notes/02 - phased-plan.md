@@ -1,4 +1,4 @@
-## Phased development plan
+## Phased development plan - KEPT FOR INSPIRATION - NOT USED IN THE PROJECT
 
 One structural note before the phases: your list has Loki (logs) and Prometheus-style metrics implied, but nothing for **traces**. If you're instrumenting with OpenTelemetry, you'll want **Grafana Tempo** in the stack too, or traces have nowhere to land. I've included it below — worth deciding now if you want to skip it and do metrics+logs only.
 
