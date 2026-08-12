@@ -490,9 +490,10 @@
     },
     {
       "datasource": {
-        "type": "cloudwatch",
-        "uid": "cloudwatch"
+        "type": "loki",
+        "uid": "loki"
       },
+      "description": "Cache hit % from CloudFront access logs (x-edge-result-type). Hit / (Hit+Miss+RefreshHit). Free alternative to CloudWatch CacheHitRate (paid additional metrics).",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -512,7 +513,24 @@
           },
           "max": 100,
           "min": 0,
-          "unit": "percent"
+          "unit": "percent",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 70
+              },
+              {
+                "color": "green",
+                "value": 90
+              }
+            ]
+          }
         },
         "overrides": []
       },
@@ -527,7 +545,7 @@
         "legend": {
           "calcs": [
             "mean",
-            "max"
+            "min"
           ],
           "displayMode": "table",
           "placement": "bottom",
@@ -542,82 +560,17 @@
         {
           "refId": "A",
           "datasource": {
-            "type": "cloudwatch",
-            "uid": "cloudwatch"
+            "type": "loki",
+            "uid": "loki"
           },
-          "queryMode": "Metrics",
-          "metricQueryType": 0,
-          "metricEditorMode": 0,
-          "namespace": "AWS/CloudFront",
-          "metricName": "TotalErrorRate",
-          "dimensions": {
-            "DistributionId": [
-              "E23PAQJ8T46O9C"
-            ],
-            "Region": [
-              "Global"
-            ]
-          },
-          "matchExact": true,
-          "statistic": "Average",
-          "period": "300",
-          "region": "us-east-1",
-          "label": "paulserban.eu"
-        },
-        {
-          "refId": "B",
-          "datasource": {
-            "type": "cloudwatch",
-            "uid": "cloudwatch"
-          },
-          "queryMode": "Metrics",
-          "metricQueryType": 0,
-          "metricEditorMode": 0,
-          "namespace": "AWS/CloudFront",
-          "metricName": "TotalErrorRate",
-          "dimensions": {
-            "DistributionId": [
-              "E1V44X4FXZUKSR"
-            ],
-            "Region": [
-              "Global"
-            ]
-          },
-          "matchExact": true,
-          "statistic": "Average",
-          "period": "300",
-          "region": "us-east-1",
-          "label": "blog.paulserban.eu"
-        },
-        {
-          "refId": "C",
-          "datasource": {
-            "type": "cloudwatch",
-            "uid": "cloudwatch"
-          },
-          "queryMode": "Metrics",
-          "metricQueryType": 0,
-          "metricEditorMode": 0,
-          "namespace": "AWS/CloudFront",
-          "metricName": "TotalErrorRate",
-          "dimensions": {
-            "DistributionId": [
-              "E1GGJ55TOMLCNY"
-            ],
-            "Region": [
-              "Global"
-            ]
-          },
-          "matchExact": true,
-          "statistic": "Average",
-          "period": "300",
-          "region": "us-east-1",
-          "label": "quiz.paulserban.eu"
+          "editorMode": "code",
+          "expr": "sum by (site) (count_over_time({job=\"cloudfront\", result_type=\"Hit\"} [$__interval])) / sum by (site) (count_over_time({job=\"cloudfront\", result_type=~\"Hit|Miss|RefreshHit\"} [$__interval])) * 100",
+          "legendFormat": "{{site}}",
+          "queryType": "range"
         }
       ],
-      "title": "Total error rate",
-      "type": "timeseries",
-      "description": "Free CloudFront metric (4xx+5xx combined). CacheHitRate requires paid CloudFront additional metrics (~$0.01/metric/hour/distribution) \u2014 for $0 cache hit ratio use: ./scripts/query.sh cache-hit-ratio [prefix]"
+      "title": "Cache hit rate (from access logs)",
+      "type": "timeseries"
     }
   ],
   "refresh": "5m",
@@ -638,5 +591,5 @@
   "timezone": "browser",
   "title": "CloudFront overview",
   "uid": "cloudfront-overview",
-  "version": 5
+  "version": 6
 }

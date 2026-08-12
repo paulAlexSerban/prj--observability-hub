@@ -6,6 +6,9 @@ services:
     image: grafana/grafana:11.5.2
     container_name: observability-hub-grafana
     restart: unless-stopped
+    depends_on:
+      loki:
+        condition: service_started
     ports:
       - "127.0.0.1:3000:3000"
     environment:
@@ -29,5 +32,56 @@ services:
       timeout: 5s
       retries: 5
 
+  loki:
+    image: grafana/loki:3.4.2
+    container_name: observability-hub-loki
+    restart: unless-stopped
+    command: ["-config.file=/etc/loki/loki.yml"]
+    volumes:
+      - ./loki/loki.yml:/etc/loki/loki.yml:ro
+      - loki-data:/loki
+    # No host ports — Grafana reaches Loki on the compose network only.
+
+  cf-log-sync:
+    image: amazon/aws-cli:2.24.14
+    container_name: observability-hub-cf-log-sync
+    restart: unless-stopped
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        set -eu
+        echo "syncing s3://$${CF_LOG_BUCKET} -> /logs every 300s"
+        while true; do
+          aws s3 sync "s3://$${CF_LOG_BUCKET}" /logs --no-progress || echo "s3 sync failed (will retry)"
+          sleep 300
+        done
+    environment:
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      AWS_DEFAULT_REGION: ${CF_LOG_REGION:-eu-central-1}
+      CF_LOG_BUCKET: ${CF_LOG_BUCKET}
+    volumes:
+      - cf-access-logs:/logs
+
+  alloy:
+    image: grafana/alloy:v1.7.5
+    container_name: observability-hub-alloy
+    restart: unless-stopped
+    depends_on:
+      - loki
+      - cf-log-sync
+    command:
+      - run
+      - /etc/alloy/config.alloy
+      - --storage.path=/var/lib/alloy/data
+      - --server.http.listen-addr=0.0.0.0:12345
+    volumes:
+      - ./alloy/config.alloy:/etc/alloy/config.alloy:ro
+      - cf-access-logs:/logs:ro
+      - alloy-data:/var/lib/alloy/data
+
 volumes:
   grafana-data:
+  loki-data:
+  cf-access-logs:
+  alloy-data:

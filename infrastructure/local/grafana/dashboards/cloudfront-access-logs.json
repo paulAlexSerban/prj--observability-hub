@@ -1,0 +1,883 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "description": "CloudFront standard access logs shipped from S3 \u2192 Alloy \u2192 Loki (Phase 0 / Phase 6 practice).",
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "links": [],
+  "panels": [
+    {
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 20,
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "showPoints": "never",
+            "spanNulls": true,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            }
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 0
+      },
+      "id": 1,
+      "options": {
+        "legend": {
+          "calcs": [
+            "sum"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "loki"
+          },
+          "editorMode": "code",
+          "expr": "sum by (site) (count_over_time({job=\"cloudfront\", site=~\"$site\"} [$__interval]))",
+          "legendFormat": "{{site}}",
+          "queryType": "range",
+          "refId": "A"
+        }
+      ],
+      "title": "Requests over time",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "bars",
+            "fillOpacity": 80,
+            "lineWidth": 1,
+            "showPoints": "never",
+            "stacking": {
+              "group": "A",
+              "mode": "normal"
+            }
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 0
+      },
+      "id": 2,
+      "options": {
+        "legend": {
+          "calcs": [
+            "sum"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "loki"
+          },
+          "editorMode": "code",
+          "expr": "sum by (status) (count_over_time({job=\"cloudfront\", site=~\"$site\"} [$__interval]))",
+          "legendFormat": "{{status}}",
+          "queryType": "range",
+          "refId": "A"
+        }
+      ],
+      "title": "Status code volume",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "description": "x-edge-result-type from access logs \u2014 $0 stand-in for CloudFront's paid CacheHitRate metric.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "bars",
+            "fillOpacity": 80,
+            "lineWidth": 1,
+            "showPoints": "never",
+            "stacking": {
+              "group": "A",
+              "mode": "normal"
+            }
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 8
+      },
+      "id": 3,
+      "options": {
+        "legend": {
+          "calcs": [
+            "sum"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "loki"
+          },
+          "editorMode": "code",
+          "expr": "sum by (result_type) (count_over_time({job=\"cloudfront\", site=~\"$site\"} [$__interval]))",
+          "legendFormat": "{{result_type}}",
+          "queryType": "range",
+          "refId": "A"
+        }
+      ],
+      "title": "Cache result type (Hit / Miss / \u2026)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 50
+              },
+              {
+                "color": "red",
+                "value": 200
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 8
+      },
+      "id": 4,
+      "options": {
+        "displayMode": "table",
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "namePlacement": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "sum"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showUnfilled": true,
+        "sizing": "auto",
+        "valueMode": "color"
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "loki"
+          },
+          "editorMode": "code",
+          "expr": "topk(20, sum by (path) (count_over_time({job=\"cloudfront\", site=~\"$site\"} | logfmt | keep path | path != \"\" [$__range])))",
+          "legendFormat": "{{path}}",
+          "queryType": "instant",
+          "refId": "A"
+        }
+      ],
+      "title": "Top 20 paths",
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              },
+              {
+                "color": "purple",
+                "value": 20
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 16
+      },
+      "id": 5,
+      "options": {
+        "displayMode": "table",
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "sum"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showUnfilled": true,
+        "sizing": "auto",
+        "valueMode": "color"
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "loki"
+          },
+          "editorMode": "code",
+          "expr": "topk(20, sum by (referer) (count_over_time({job=\"cloudfront\", site=~\"$site\"} | logfmt | keep referer | referer != \"\" | referer != \"-\" | referer =~ \".*paulserban\\\\.eu.*\" [$__range])))",
+          "legendFormat": "{{referer}}",
+          "queryType": "instant",
+          "refId": "A"
+        }
+      ],
+      "title": "Top 20 internal referrers",
+      "type": "table",
+      "description": "Referers matching *.paulserban.eu (cross-site / same-family navigation)."
+    },
+    {
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "orange",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 20
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 16
+      },
+      "id": 7,
+      "options": {
+        "displayMode": "table",
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "sum"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showUnfilled": true,
+        "sizing": "auto",
+        "valueMode": "color"
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "loki"
+          },
+          "editorMode": "code",
+          "expr": "topk(20, sum by (referer) (count_over_time({job=\"cloudfront\", site=~\"$site\"} | logfmt | keep referer | referer != \"\" | referer != \"-\" | referer !~ \".*paulserban\\\\.eu.*\" [$__range])))",
+          "legendFormat": "{{referer}}",
+          "queryType": "instant",
+          "refId": "A"
+        }
+      ],
+      "title": "Top 20 external referrers",
+      "type": "table",
+      "description": "Referers outside *.paulserban.eu (search engines, social, other sites)."
+    },
+    {
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 24,
+        "x": 0,
+        "y": 36
+      },
+      "id": 6,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true,
+        "sortBy": []
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "loki"
+          },
+          "editorMode": "code",
+          "expr": "{job=\"cloudfront\", site=~\"$site\"}",
+          "queryType": "range",
+          "refId": "A"
+        }
+      ],
+      "title": "Raw access logs",
+      "type": "logs"
+    },
+    {
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "description": "CloudFront edge locations (e.g. IAD55-P9). POP prefix \u2248 metro/region, not country.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "teal",
+                "value": null
+              },
+              {
+                "color": "purple",
+                "value": 20
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 24
+      },
+      "id": 8,
+      "options": {
+        "displayMode": "table",
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "sum"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showUnfilled": true,
+        "sizing": "auto",
+        "valueMode": "color"
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "loki"
+          },
+          "editorMode": "code",
+          "expr": "topk(20, sum by (edge) (count_over_time({job=\"cloudfront\", site=~\"$site\"} | logfmt | keep edge | edge != \"\" [$__range])))",
+          "legendFormat": "{{edge}}",
+          "queryType": "instant",
+          "refId": "A"
+        }
+      ],
+      "title": "Top 20 edge POPs",
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "description": "Client IPs from access logs (logfmt). For exact unique counts prefer clickhouse: ./scripts/query.sh unique-ips",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 20
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 24
+      },
+      "id": 9,
+      "options": {
+        "displayMode": "table",
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "sum"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showUnfilled": true,
+        "sizing": "auto",
+        "valueMode": "color"
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "loki"
+          },
+          "editorMode": "code",
+          "expr": "topk(20, sum by (ip) (count_over_time({job=\"cloudfront\", site=~\"$site\"} | logfmt | keep ip | ip != \"\" [$__range])))",
+          "legendFormat": "{{ip}}",
+          "queryType": "instant",
+          "refId": "A"
+        }
+      ],
+      "title": "Top 20 client IPs",
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "description": "Loki series count of distinct ip values in range (approx). Exact: ./scripts/query.sh unique-ips [site]",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 10
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 8,
+        "x": 0,
+        "y": 32
+      },
+      "id": 10,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "loki"
+          },
+          "editorMode": "code",
+          "expr": "count(sum by (ip) (count_over_time({job=\"cloudfront\", site=~\"$site\"} | logfmt | keep ip | ip != \"\" [$__range])))",
+          "legendFormat": "unique_ips",
+          "queryType": "instant",
+          "refId": "A"
+        }
+      ],
+      "title": "Approx. unique IPs",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "description": "Total access-log lines in the selected range / sites.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 10
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 8,
+        "x": 8,
+        "y": 32
+      },
+      "id": 11,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "loki"
+          },
+          "editorMode": "code",
+          "expr": "sum(count_over_time({job=\"cloudfront\", site=~\"$site\"} [$__range]))",
+          "legendFormat": "unique_ips",
+          "queryType": "instant",
+          "refId": "A"
+        }
+      ],
+      "title": "Total requests (logs)",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "description": "How many different CloudFront edge locations served traffic.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 10
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 8,
+        "x": 16,
+        "y": 32
+      },
+      "id": 12,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "loki"
+          },
+          "editorMode": "code",
+          "expr": "count(sum by (edge) (count_over_time({job=\"cloudfront\", site=~\"$site\"} | logfmt | keep edge | edge != \"\" [$__range])))",
+          "legendFormat": "unique_ips",
+          "queryType": "instant",
+          "refId": "A"
+        }
+      ],
+      "title": "Distinct edge POPs",
+      "type": "stat"
+    }
+  ],
+  "refresh": "1m",
+  "schemaVersion": 39,
+  "tags": [
+    "cloudfront",
+    "loki",
+    "phase-0",
+    "access-logs"
+  ],
+  "templating": {
+    "list": [
+      {
+        "allValue": ".+",
+        "current": {
+          "selected": true,
+          "text": "All",
+          "value": "$__all"
+        },
+        "datasource": {
+          "type": "loki",
+          "uid": "loki"
+        },
+        "definition": "label_values(site)",
+        "includeAll": true,
+        "label": "Site",
+        "multi": true,
+        "name": "site",
+        "options": [],
+        "query": "label_values({job=\"cloudfront\"}, site)",
+        "refresh": 2,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 1,
+        "type": "query"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-7d",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "CloudFront access logs",
+  "uid": "cloudfront-access-logs",
+  "version": 4
+}

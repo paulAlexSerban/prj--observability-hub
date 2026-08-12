@@ -34,6 +34,7 @@ Use **clickhouse-local** (via Docker, no local binary install) as the Phase 0 qu
 
 ## Consequences
 
-- **Positive:** Phase 0 exit gate ("top 10 paths and error rate, last 7 days") is met without Athena; README Getting Started points at clickhouse-local.
+- **Positive:** Phase 0 exit gate ("top 10 paths and error rate, last 7 days") is met without Athena; README Getting Started points at clickhouse-local for CLI SQL.
 - **Negative:** Athena is no longer the documented primary path — anyone following the older phased-plan wording literally would be out of date (this ADR + README supersede that detail for Phase 0).
+- **Grafana log UI:** Interactive access-log dashboards use **Loki + Alloy** (Phase 6 practiced locally), not a persistent ClickHouse server or Grafana ClickHouse plugin. clickhouse-local remains CLI-only.
 - **Revisit trigger:** If query volume or multi-user shared SQL over the same log lake becomes a requirement, or if clickhouse-local S3 access patterns become awkward, reconsider Athena as a serverless shared query layer.

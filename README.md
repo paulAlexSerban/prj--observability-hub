@@ -20,7 +20,8 @@ Self-hosted observability, analytics, and monitoring for my online projects - cu
 | Uptime monitoring      | Uptime Kuma                           | VPS                 |
 | Infra metrics          | Prometheus + node_exporter            | VPS                 |
 | CloudFront/S3 metrics  | Grafana CloudWatch data source / YACE | Local → VPS         |
-| Access-log SQL (Phase 0) | clickhouse-local                    | Local (Docker)      |
+| Access-log SQL (CLI)   | clickhouse-local                      | Local (Docker one-shot) |
+| Access-log dashboards  | Grafana Loki + Alloy                  | Local → VPS (Phase 6) |
 | Dashboards             | Grafana                               | Local → VPS         |
 | Logs (later)           | Grafana Loki + Alloy                  | VPS                 |
 | Error tracking (later) | GlitchTip                             | VPS                 |
@@ -28,7 +29,7 @@ Self-hosted observability, analytics, and monitoring for my online projects - cu
 **Key decisions:**
 - Docker Compose over Kubernetes - see [`ADR-001`](_docs/02 architecture-knowledge-management/adr--001--orchestration.md). Single-node, single-replica workloads don't justify an orchestrator's fixed resource/complexity tax.
 - Traefik over Caddy for reverse proxy - Docker-provider label-based routing, no shared config file to edit per service added.
-- clickhouse-local over Athena for Phase 0 log SQL - see [`ADR-002`](_docs/02 architecture-knowledge-management/adr--002--query-engine.md).
+- clickhouse-local over Athena for Phase 0 ad-hoc SQL - see [`ADR-002`](_docs/02 architecture-knowledge-management/adr--002--query-engine.md). Grafana log UI uses Loki (Phase 6 practiced locally), not a ClickHouse server.
 
 ## Repository layout
 
@@ -47,7 +48,7 @@ Built out in gated phases - each phase has a fixed objective, concrete deliverab
 
 | Phase | Concern                                                           | Hosting           | Status      |
 | ----- | ----------------------------------------------------------------- | ----------------- | ----------- |
-| 0     | Local AWS log aggregation (CloudFront/S3 via CloudWatch + clickhouse-local) | Local machine, $0 | Done        |
+| 0     | Local AWS log aggregation (CloudWatch + Loki access logs + clickhouse-local CLI) | Local machine, $0 | Done        |
 | 1     | VPS provisioning + Traefik platform foundation                    | VPS               | Not started |
 | 2     | Privacy-friendly page analytics (Umami)                           | VPS               | Not started |
 | 3     | Real User Monitoring / Core Web Vitals                            | VPS               | Not started |
@@ -66,18 +67,21 @@ Phase 0 requires no hosting spend - it validates the CDN-analytics approach enti
    cd ../local && cp .env.example .env
    # paste: terraform -chdir=../aws output -raw access_key_id / secret_access_key
    ```
-3. Start local Grafana (CloudWatch datasource + CloudFront overview dashboard):
+3. Start the local stack (Grafana + Loki + Alloy + S3 sync):
    ```bash
-   cd infrastructure/local
-   docker compose -f docker-compose.local.yml --env-file .env up -d
+   make compose_up
    # http://127.0.0.1:3000  (admin / value of GRAFANA_ADMIN_PASSWORD)
+   # Dashboards: CloudFront overview (metrics) + CloudFront access logs (Loki)
    ```
-4. Query access logs with clickhouse-local:
+4. Optional — ad-hoc SQL with clickhouse-local (CLI, not Grafana):
    ```bash
    ./scripts/query.sh top-paths
    ./scripts/query.sh status-breakdown blog.paulserban.eu
    ./scripts/query.sh cache-hit-ratio
    ./scripts/query.sh referrers quiz.paulserban.eu
+   ./scripts/query.sh unique-ips
+   ./scripts/query.sh top-ips
+   ./scripts/query.sh edge-pops blog.paulserban.eu
    ```
 
 More detail: [`infrastructure/local/README.md`](infrastructure/local/README.md). Exit criteria for this phase are in the phased plan doc.

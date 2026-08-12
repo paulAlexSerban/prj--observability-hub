@@ -1,0 +1,97 @@
+// Ship CloudFront standard access logs (gzipped TSV under /logs/<site>/) into local Loki.
+// Site label comes from path_targets — matches S3 key prefixes used by the portfolio Terraform.
+
+local.file_match "cloudfront" {
+	path_targets = [
+		{
+			__path__ = "/logs/paulserban.eu/**/*.gz",
+			job      = "cloudfront",
+			site     = "paulserban.eu",
+		},
+		{
+			__path__ = "/logs/blog.paulserban.eu/**/*.gz",
+			job      = "cloudfront",
+			site     = "blog.paulserban.eu",
+		},
+		{
+			__path__ = "/logs/quiz.paulserban.eu/**/*.gz",
+			job      = "cloudfront",
+			site     = "quiz.paulserban.eu",
+		},
+	]
+
+	sync_period = "30s"
+}
+
+loki.source.file "cloudfront" {
+	targets    = local.file_match.cloudfront.targets
+	forward_to = [loki.process.cloudfront.receiver]
+
+	decompression {
+		enabled       = true
+		initial_delay = "5s"
+		format        = "gz"
+	}
+
+	file_watch {
+		min_poll_frequency = "5s"
+		max_poll_frequency = "30s"
+	}
+}
+
+loki.process "cloudfront" {
+	forward_to = [loki.write.local.receiver]
+
+	// Drop CloudFront file headers (#Version / #Fields).
+	stage.drop {
+		expression          = "^#"
+		drop_counter_reason = "cf_header"
+	}
+
+	// CloudFront standard logs are tab-separated.
+	stage.regex {
+		expression = "^(?P<date>[^\\t]+)\\t(?P<time>[^\\t]+)\\t(?P<x_edge_location>[^\\t]+)\\t(?P<sc_bytes>[^\\t]+)\\t(?P<c_ip>[^\\t]+)\\t(?P<cs_method>[^\\t]+)\\t(?P<cs_host>[^\\t]+)\\t(?P<path>[^\\t]+)\\t(?P<status>[^\\t]+)\\t(?P<referer>[^\\t]+)\\t(?P<user_agent>[^\\t]+)\\t(?P<cs_uri_query>[^\\t]+)\\t(?P<cs_cookie>[^\\t]+)\\t(?P<result_type>[^\\t]+)\\t(?P<request_id>[^\\t]+)"
+	}
+
+	stage.template {
+		source   = "ts"
+		template = "{{ .date }}T{{ .time }}"
+	}
+
+	stage.timestamp {
+		source = "ts"
+		format = "2006-01-02T15:04:05"
+	}
+
+	// Indexed labels — keep cardinality bounded (site/status/result_type only).
+	// job + site already arrive from file_match targets.
+	stage.labels {
+		values = {
+			status      = "status",
+			result_type = "result_type",
+		}
+	}
+
+	// Drop per-file path label (would explode cardinality as sync brings new .gz objects).
+	stage.label_drop {
+		values = ["filename"]
+	}
+
+	// High-cardinality fields stay in the log line as logfmt for LogQL `| logfmt`.
+	// Never promote ip to Loki labels — cardinality would explode.
+	// User-Agent is left out of logfmt (spaces/`=` break parsing); use clickhouse for UA.
+	stage.template {
+		source   = "output"
+		template = "method={{ .cs_method }} path={{ .path }} status={{ .status }} result_type={{ .result_type }} bytes={{ .sc_bytes }} referer={{ .referer }} edge={{ .x_edge_location }} host={{ .cs_host }} ip={{ .c_ip }}"
+	}
+
+	stage.output {
+		source = "output"
+	}
+}
+
+loki.write "local" {
+	endpoint {
+		url = "http://loki:3100/loki/api/v1/push"
+	}
+}

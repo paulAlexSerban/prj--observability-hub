@@ -44,9 +44,14 @@
    - Queries: top-paths, status-breakdown, cache-hit-ratio, referrers
    - Wrapper: ./scripts/query.sh <name> [prefix]
    - Verified against live logs (e.g. top paths + ~84% 200s already present)
-5. Docs
-   - README Phase 0 → Done, Getting Started updated for clickhouse-local
-   - [ADR-002](prj--observability-hub/_docs/02 architecture-knowledge-management/adr--002--query-engine.md) records the Athena → clickhouse-local choice
+5. Local Loki + Alloy (Phase 6 practiced early — Grafana access-log dashboards)
+   - `cf-log-sync` pulls S3 access logs every 5 minutes
+   - Alloy decompresses/parses CloudFront TSV → Loki (`job=cloudfront`, `site`, `status`, `result_type`)
+   - Dashboard **CloudFront access logs**: volume, status, cache result type, top paths, referrers, raw logs
+   - clickhouse-local stays CLI-only; no ClickHouse Grafana plugin
+6. Docs
+   - README Phase 0 → Done, Getting Started updated for Loki + clickhouse-local
+   - ADR-002 records Athena → clickhouse-local; Grafana log UI = Loki
 
 > Quick use
 > ```bash
@@ -54,10 +59,12 @@
 >   - cd prj--observability-hub/infrastructure/local
 >   - docker compose -f docker-compose.local.yml --env-file .env up -d
 >   - http://127.0.0.1:3000  (admin / admin)
->   - Access-log SQL
+>   - Dashboards: CloudFront overview + CloudFront access logs
+>   - Access-log SQL (optional CLI)
 >   - ./scripts/query.sh top-paths
 >   - ./scripts/query.sh status-breakdown blog.paulserban.eu
->   - Default Grafana password is in .env (GRAFANA_ADMIN_PASSWORD); change it if this machine isn’t private-only.
+>   - Default Grafana password is in .env (GRAFANA_ADMIN_PASSWORD)
+> ```
 
 ---
 
