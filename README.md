@@ -13,19 +13,19 @@ Self-hosted observability, analytics, and monitoring for my online projects - cu
 
 ## Architecture
 
-| Concern                | Tool                                  | Deployment          |
-| ---------------------- | ------------------------------------- | ------------------- |
-| Reverse proxy / TLS    | Traefik                               | VPS, Docker Compose |
-| Page analytics (now)   | Cloudflare Web Analytics (JS beacon)  | Cloudflare, prod-only |
-| Page analytics (later) | Umami + Postgres                      | VPS                 |
-| Uptime monitoring      | Uptime Kuma                           | VPS                 |
-| Infra metrics          | Prometheus + node_exporter            | VPS                 |
-| CloudFront/S3 metrics  | Grafana CloudWatch data source / YACE | Local → VPS         |
+| Concern                | Tool                                  | Deployment              |
+| ---------------------- | ------------------------------------- | ----------------------- |
+| Reverse proxy / TLS    | Traefik                               | VPS, Docker Compose     |
+| Page analytics (now)   | Cloudflare Web Analytics (JS beacon)  | Cloudflare, prod-only   |
+| Page analytics (later) | Umami + Postgres                      | VPS                     |
+| Uptime monitoring      | Uptime Kuma                           | VPS                     |
+| Infra metrics          | Prometheus + node_exporter            | VPS                     |
+| CloudFront/S3 metrics  | Grafana CloudWatch data source / YACE | Local -> VPS            |
 | Access-log SQL (CLI)   | clickhouse-local                      | Local (Docker one-shot) |
-| Access-log dashboards  | Grafana Loki + Alloy                  | Local → VPS (Phase 6) |
-| Dashboards             | Grafana                               | Local → VPS         |
-| Logs (later)           | Grafana Loki + Alloy                  | VPS                 |
-| Error tracking (later) | GlitchTip                             | VPS                 |
+| Access-log dashboards  | Grafana Loki + Alloy                  | Local -> VPS (Phase 6)  |
+| Dashboards             | Grafana                               | Local -> VPS            |
+| Logs (later)           | Grafana Loki + Alloy                  | VPS                     |
+| Error tracking (later) | GlitchTip                             | VPS                     |
 
 **Key decisions:**
 - Docker Compose over Kubernetes - see [`ADR-001`](_docs/02 architecture-knowledge-management/adr--001--orchestration.md). Single-node, single-replica workloads don't justify an orchestrator's fixed resource/complexity tax.
@@ -48,16 +48,16 @@ CloudFront access logging (shared log bucket + `logging_config` on site/blog/qui
 
 Built out in gated phases - each phase has a fixed objective, concrete deliverables, and an exit gate before moving to the next. Full detail in [`01 - phased-plan.md`](./_docs/03%20plans/01%20-%20phased-plan.md).
 
-| Phase | Concern                                                           | Hosting           | Status      |
-| ----- | ----------------------------------------------------------------- | ----------------- | ----------- |
-| 0     | Local AWS log aggregation (CloudWatch + Loki access logs + clickhouse-local CLI) | Local machine, $0 | Done        |
-| 0b    | Cloudflare Web Analytics (JS beacon, four prod hostnames)         | Cloudflare, $0    | Snippets in apps — add production env vars |
-| 1     | VPS provisioning + Traefik platform foundation                    | VPS               | Not started |
-| 2     | Owned page analytics (Umami)                                      | VPS               | Not started |
-| 3     | Owned RUM / Core Web Vitals (optional if CF CWV is enough)        | VPS               | Not started |
-| 4     | Uptime / synthetic monitoring (Uptime Kuma)                       | VPS               | Not started |
-| 5     | Infra metrics + unified Grafana dashboards                        | VPS               | Not started |
-| 6     | Log aggregation + error tracking (optional)                       | VPS               | Not started |
+| Phase | Concern                                                                          | Hosting           | Status                                     |
+| ----- | -------------------------------------------------------------------------------- | ----------------- | ------------------------------------------ |
+| 0     | Local AWS log aggregation (CloudWatch + Loki access logs + clickhouse-local CLI) | Local machine, $0 | Done                                       |
+| 0b    | Cloudflare Web Analytics (JS beacon, four prod hostnames)                        | Cloudflare, $0    | Snippets in apps - add production env vars |
+| 1     | VPS provisioning + Traefik platform foundation                                   | VPS               | Not started                                |
+| 2     | Owned page analytics (Umami)                                                     | VPS               | Not started                                |
+| 3     | Owned RUM / Core Web Vitals (optional if CF CWV is enough)                       | VPS               | Not started                                |
+| 4     | Uptime / synthetic monitoring (Uptime Kuma)                                      | VPS               | Not started                                |
+| 5     | Infra metrics + unified Grafana dashboards                                       | VPS               | Not started                                |
+| 6     | Log aggregation + error tracking (optional)                                      | VPS               | Not started                                |
 
 Phase 0 and 0b require no hosting spend. 0b how-to: [`02 - adding-cloudflare-web-analytics.md`](./_docs/03%20plans/02%20-%20adding-cloudflare-web-analytics.md). VPS spend starts at Phase 1.
 
@@ -76,7 +76,7 @@ Phase 0 and 0b require no hosting spend. 0b how-to: [`02 - adding-cloudflare-web
    # http://127.0.0.1:3000  (admin / value of GRAFANA_ADMIN_PASSWORD)
    # Dashboards: CloudFront health (metrics + ops) + CloudFront traffic (Loki)
    ```
-4. Optional — ad-hoc SQL with clickhouse-local (CLI, not Grafana):
+4. Optional - ad-hoc SQL with clickhouse-local (CLI, not Grafana):
    ```bash
    ./scripts/query.sh top-paths
    ./scripts/query.sh status-breakdown blog.paulserban.eu
