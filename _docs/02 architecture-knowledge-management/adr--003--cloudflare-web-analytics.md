@@ -45,7 +45,7 @@ Add **Cloudflare Web Analytics now**, as **Phase 0b**, in parallel with Phase 0:
 ## Consequences
 
 - **Positive:** Visitor + coarse RUM signal before any hosting invoice. Quiz SPA can use `spa: true` (History API). Four tokens, four dashboards, same shape as four CloudFront distributions.
-- **Negative:** Visitor data leaves the AWS account and sits in Cloudflare's dashboard. **No API** — this will not become a Grafana panel. Dual-running with Umami later means two numbers that will disagree. CWV is Chromium-first.
+- **Negative:** Visitor data leaves the AWS account and sits in Cloudflare. The GraphQL Analytics API (`rumPageloadEventsAdaptiveGroups`, `rumWebVitalsEventsAdaptiveGroups`) can feed Grafana via the Infinity datasource — account-level, US-only under data localization, aggregated (not raw beacons), with minutes of ingest lag. Dual-running with Umami later means two numbers that will disagree. CWV is Chromium-first.
 - **Privacy honesty:** "No cookie banner" is not "no third party." Cloudflare sees beacons. CloudFront logs still have IPs. Say both.
 - **Revisit trigger:** If Umami is live and trusted, decide keep / drop Cloudflare. If Cloudflare CWV is enough, skip or shrink Phase 3. If a CSP is added at CloudFront, allowlist `static.cloudflareinsights.com` and `cloudflareinsights.com` or the beacon dies silently.
 

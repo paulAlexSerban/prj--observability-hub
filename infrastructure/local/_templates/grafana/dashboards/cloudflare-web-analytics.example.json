@@ -1,0 +1,2713 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "description": "Cloudflare Web Analytics RUM via GraphQL, filtered by requestHost. Account ID is in the query variables. Cross-link: CloudFront health.",
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "links": [
+    {
+      "asDropdown": false,
+      "icon": "dashboard",
+      "includeVars": true,
+      "keepTime": true,
+      "tags": [],
+      "targetBlank": false,
+      "title": "CloudFront health",
+      "tooltip": "CDN glance view (CloudWatch + Loki)",
+      "type": "link",
+      "url": "/d/cloudfront-overview"
+    },
+    {
+      "asDropdown": false,
+      "icon": "dashboard",
+      "includeVars": true,
+      "keepTime": true,
+      "tags": [],
+      "targetBlank": false,
+      "title": "CloudFront traffic",
+      "tooltip": "Access-log paths / referrers / forensics",
+      "type": "link",
+      "url": "/d/cloudfront-access-logs"
+    }
+  ],
+  "panels": [
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 1,
+      "panels": [],
+      "title": "Traffic (Cloudflare RUM beacon)",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "yesoreyeram-infinity-datasource",
+        "uid": "cf-graphql"
+      },
+      "description": "Cloudflare rumPageloadEventsAdaptiveGroups sum.visits, filtered by requestHost (not the JS beacon token).",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "decimals": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 0
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 12,
+        "x": 0,
+        "y": 1
+      },
+      "id": 2,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "yesoreyeram-infinity-datasource",
+            "uid": "cf-graphql"
+          },
+          "type": "graphql",
+          "source": "url",
+          "url": "https://api.cloudflare.com/client/v4/graphql",
+          "parser": "backend",
+          "format": "table",
+          "root_selector": "data.viewer.accounts[0].rumPageloadEventsAdaptiveGroups",
+          "columns": [
+            {
+              "selector": "sum.visits",
+              "text": "paulserban.eu",
+              "type": "number"
+            }
+          ],
+          "filters": [],
+          "url_options": {
+            "method": "POST",
+            "body_type": "graphql",
+            "body_content_type": "application/json",
+            "body_graphql_query": "query RumTotals($accountTag: string!, $host: string!, $start: Time!, $end: Time!) {\n  viewer {\n    accounts(filter: { accountTag: $accountTag }) {\n      rumPageloadEventsAdaptiveGroups(\n        limit: 1\n        filter: { datetime_geq: $start, datetime_leq: $end, requestHost: $host }\n      ) {\n        count\n        sum { visits }\n      }\n    }\n  }\n}",
+            "body_graphql_variables": "{\"accountTag\":\"REPLACE_CF_ACCOUNT_ID\",\"host\":\"paulserban.eu\",\"start\":\"${__from:date:iso}\",\"end\":\"${__to:date:iso}\"}",
+            "data": ""
+          }
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "yesoreyeram-infinity-datasource",
+            "uid": "cf-graphql"
+          },
+          "type": "graphql",
+          "source": "url",
+          "url": "https://api.cloudflare.com/client/v4/graphql",
+          "parser": "backend",
+          "format": "table",
+          "root_selector": "data.viewer.accounts[0].rumPageloadEventsAdaptiveGroups",
+          "columns": [
+            {
+              "selector": "sum.visits",
+              "text": "blog.paulserban.eu",
+              "type": "number"
+            }
+          ],
+          "filters": [],
+          "url_options": {
+            "method": "POST",
+            "body_type": "graphql",
+            "body_content_type": "application/json",
+            "body_graphql_query": "query RumTotals($accountTag: string!, $host: string!, $start: Time!, $end: Time!) {\n  viewer {\n    accounts(filter: { accountTag: $accountTag }) {\n      rumPageloadEventsAdaptiveGroups(\n        limit: 1\n        filter: { datetime_geq: $start, datetime_leq: $end, requestHost: $host }\n      ) {\n        count\n        sum { visits }\n      }\n    }\n  }\n}",
+            "body_graphql_variables": "{\"accountTag\":\"REPLACE_CF_ACCOUNT_ID\",\"host\":\"blog.paulserban.eu\",\"start\":\"${__from:date:iso}\",\"end\":\"${__to:date:iso}\"}",
+            "data": ""
+          }
+        },
+        {
+          "refId": "C",
+          "datasource": {
+            "type": "yesoreyeram-infinity-datasource",
+            "uid": "cf-graphql"
+          },
+          "type": "graphql",
+          "source": "url",
+          "url": "https://api.cloudflare.com/client/v4/graphql",
+          "parser": "backend",
+          "format": "table",
+          "root_selector": "data.viewer.accounts[0].rumPageloadEventsAdaptiveGroups",
+          "columns": [
+            {
+              "selector": "sum.visits",
+              "text": "news-feed.paulserban.eu",
+              "type": "number"
+            }
+          ],
+          "filters": [],
+          "url_options": {
+            "method": "POST",
+            "body_type": "graphql",
+            "body_content_type": "application/json",
+            "body_graphql_query": "query RumTotals($accountTag: string!, $host: string!, $start: Time!, $end: Time!) {\n  viewer {\n    accounts(filter: { accountTag: $accountTag }) {\n      rumPageloadEventsAdaptiveGroups(\n        limit: 1\n        filter: { datetime_geq: $start, datetime_leq: $end, requestHost: $host }\n      ) {\n        count\n        sum { visits }\n      }\n    }\n  }\n}",
+            "body_graphql_variables": "{\"accountTag\":\"REPLACE_CF_ACCOUNT_ID\",\"host\":\"news-feed.paulserban.eu\",\"start\":\"${__from:date:iso}\",\"end\":\"${__to:date:iso}\"}",
+            "data": ""
+          }
+        },
+        {
+          "refId": "D",
+          "datasource": {
+            "type": "yesoreyeram-infinity-datasource",
+            "uid": "cf-graphql"
+          },
+          "type": "graphql",
+          "source": "url",
+          "url": "https://api.cloudflare.com/client/v4/graphql",
+          "parser": "backend",
+          "format": "table",
+          "root_selector": "data.viewer.accounts[0].rumPageloadEventsAdaptiveGroups",
+          "columns": [
+            {
+              "selector": "sum.visits",
+              "text": "quiz.paulserban.eu",
+              "type": "number"
+            }
+          ],
+          "filters": [],
+          "url_options": {
+            "method": "POST",
+            "body_type": "graphql",
+            "body_content_type": "application/json",
+            "body_graphql_query": "query RumTotals($accountTag: string!, $host: string!, $start: Time!, $end: Time!) {\n  viewer {\n    accounts(filter: { accountTag: $accountTag }) {\n      rumPageloadEventsAdaptiveGroups(\n        limit: 1\n        filter: { datetime_geq: $start, datetime_leq: $end, requestHost: $host }\n      ) {\n        count\n        sum { visits }\n      }\n    }\n  }\n}",
+            "body_graphql_variables": "{\"accountTag\":\"REPLACE_CF_ACCOUNT_ID\",\"host\":\"quiz.paulserban.eu\",\"start\":\"${__from:date:iso}\",\"end\":\"${__to:date:iso}\"}",
+            "data": ""
+          }
+        }
+      ],
+      "title": "Visits",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "yesoreyeram-infinity-datasource",
+        "uid": "cf-graphql"
+      },
+      "description": "Page views (count) filtered by requestHost. Quiz SPA counts History API navigations when spa:true is set.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "decimals": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 0
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 12,
+        "x": 12,
+        "y": 1
+      },
+      "id": 3,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "yesoreyeram-infinity-datasource",
+            "uid": "cf-graphql"
+          },
+          "type": "graphql",
+          "source": "url",
+          "url": "https://api.cloudflare.com/client/v4/graphql",
+          "parser": "backend",
+          "format": "table",
+          "root_selector": "data.viewer.accounts[0].rumPageloadEventsAdaptiveGroups",
+          "columns": [
+            {
+              "selector": "count",
+              "text": "paulserban.eu",
+              "type": "number"
+            }
+          ],
+          "filters": [],
+          "url_options": {
+            "method": "POST",
+            "body_type": "graphql",
+            "body_content_type": "application/json",
+            "body_graphql_query": "query RumTotals($accountTag: string!, $host: string!, $start: Time!, $end: Time!) {\n  viewer {\n    accounts(filter: { accountTag: $accountTag }) {\n      rumPageloadEventsAdaptiveGroups(\n        limit: 1\n        filter: { datetime_geq: $start, datetime_leq: $end, requestHost: $host }\n      ) {\n        count\n        sum { visits }\n      }\n    }\n  }\n}",
+            "body_graphql_variables": "{\"accountTag\":\"REPLACE_CF_ACCOUNT_ID\",\"host\":\"paulserban.eu\",\"start\":\"${__from:date:iso}\",\"end\":\"${__to:date:iso}\"}",
+            "data": ""
+          }
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "yesoreyeram-infinity-datasource",
+            "uid": "cf-graphql"
+          },
+          "type": "graphql",
+          "source": "url",
+          "url": "https://api.cloudflare.com/client/v4/graphql",
+          "parser": "backend",
+          "format": "table",
+          "root_selector": "data.viewer.accounts[0].rumPageloadEventsAdaptiveGroups",
+          "columns": [
+            {
+              "selector": "count",
+              "text": "blog.paulserban.eu",
+              "type": "number"
+            }
+          ],
+          "filters": [],
+          "url_options": {
+            "method": "POST",
+            "body_type": "graphql",
+            "body_content_type": "application/json",
+            "body_graphql_query": "query RumTotals($accountTag: string!, $host: string!, $start: Time!, $end: Time!) {\n  viewer {\n    accounts(filter: { accountTag: $accountTag }) {\n      rumPageloadEventsAdaptiveGroups(\n        limit: 1\n        filter: { datetime_geq: $start, datetime_leq: $end, requestHost: $host }\n      ) {\n        count\n        sum { visits }\n      }\n    }\n  }\n}",
+            "body_graphql_variables": "{\"accountTag\":\"REPLACE_CF_ACCOUNT_ID\",\"host\":\"blog.paulserban.eu\",\"start\":\"${__from:date:iso}\",\"end\":\"${__to:date:iso}\"}",
+            "data": ""
+          }
+        },
+        {
+          "refId": "C",
+          "datasource": {
+            "type": "yesoreyeram-infinity-datasource",
+            "uid": "cf-graphql"
+          },
+          "type": "graphql",
+          "source": "url",
+          "url": "https://api.cloudflare.com/client/v4/graphql",
+          "parser": "backend",
+          "format": "table",
+          "root_selector": "data.viewer.accounts[0].rumPageloadEventsAdaptiveGroups",
+          "columns": [
+            {
+              "selector": "count",
+              "text": "news-feed.paulserban.eu",
+              "type": "number"
+            }
+          ],
+          "filters": [],
+          "url_options": {
+            "method": "POST",
+            "body_type": "graphql",
+            "body_content_type": "application/json",
+            "body_graphql_query": "query RumTotals($accountTag: string!, $host: string!, $start: Time!, $end: Time!) {\n  viewer {\n    accounts(filter: { accountTag: $accountTag }) {\n      rumPageloadEventsAdaptiveGroups(\n        limit: 1\n        filter: { datetime_geq: $start, datetime_leq: $end, requestHost: $host }\n      ) {\n        count\n        sum { visits }\n      }\n    }\n  }\n}",
+            "body_graphql_variables": "{\"accountTag\":\"REPLACE_CF_ACCOUNT_ID\",\"host\":\"news-feed.paulserban.eu\",\"start\":\"${__from:date:iso}\",\"end\":\"${__to:date:iso}\"}",
+            "data": ""
+          }
+        },
+        {
+          "refId": "D",
+          "datasource": {
+            "type": "yesoreyeram-infinity-datasource",
+            "uid": "cf-graphql"
+          },
+          "type": "graphql",
+          "source": "url",
+          "url": "https://api.cloudflare.com/client/v4/graphql",
+          "parser": "backend",
+          "format": "table",
+          "root_selector": "data.viewer.accounts[0].rumPageloadEventsAdaptiveGroups",
+          "columns": [
+            {
+              "selector": "count",
+              "text": "quiz.paulserban.eu",
+              "type": "number"
+            }
+          ],
+          "filters": [],
+          "url_options": {
+            "method": "POST",
+            "body_type": "graphql",
+            "body_content_type": "application/json",
+            "body_graphql_query": "query RumTotals($accountTag: string!, $host: string!, $start: Time!, $end: Time!) {\n  viewer {\n    accounts(filter: { accountTag: $accountTag }) {\n      rumPageloadEventsAdaptiveGroups(\n        limit: 1\n        filter: { datetime_geq: $start, datetime_leq: $end, requestHost: $host }\n      ) {\n        count\n        sum { visits }\n      }\n    }\n  }\n}",
+            "body_graphql_variables": "{\"accountTag\":\"REPLACE_CF_ACCOUNT_ID\",\"host\":\"quiz.paulserban.eu\",\"start\":\"${__from:date:iso}\",\"end\":\"${__to:date:iso}\"}",
+            "data": ""
+          }
+        }
+      ],
+      "title": "Page views",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "yesoreyeram-infinity-datasource",
+        "uid": "cf-graphql"
+      },
+      "description": "Page views grouped by datetimeHour, one series per beacon hostname.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 15,
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "showPoints": "never",
+            "spanNulls": true,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            }
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 24,
+        "x": 0,
+        "y": 6
+      },
+      "id": 4,
+      "options": {
+        "legend": {
+          "calcs": [
+            "sum"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "yesoreyeram-infinity-datasource",
+            "uid": "cf-graphql"
+          },
+          "type": "graphql",
+          "source": "url",
+          "url": "https://api.cloudflare.com/client/v4/graphql",
+          "parser": "backend",
+          "format": "timeseries",
+          "root_selector": "data.viewer.accounts[0].rumPageloadEventsAdaptiveGroups",
+          "columns": [
+            {
+              "selector": "dimensions.datetimeHour",
+              "text": "Time",
+              "type": "timestamp"
+            },
+            {
+              "selector": "count",
+              "text": "paulserban.eu",
+              "type": "number"
+            }
+          ],
+          "filters": [],
+          "url_options": {
+            "method": "POST",
+            "body_type": "graphql",
+            "body_content_type": "application/json",
+            "body_graphql_query": "query RumHourly($accountTag: string!, $host: string!, $start: Time!, $end: Time!) {\n  viewer {\n    accounts(filter: { accountTag: $accountTag }) {\n      rumPageloadEventsAdaptiveGroups(\n        limit: 5000\n        filter: { datetime_geq: $start, datetime_leq: $end, requestHost: $host }\n        orderBy: [datetimeHour_ASC]\n      ) {\n        count\n        sum { visits }\n        dimensions { datetimeHour }\n      }\n    }\n  }\n}",
+            "body_graphql_variables": "{\"accountTag\":\"REPLACE_CF_ACCOUNT_ID\",\"host\":\"paulserban.eu\",\"start\":\"${__from:date:iso}\",\"end\":\"${__to:date:iso}\"}",
+            "data": ""
+          }
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "yesoreyeram-infinity-datasource",
+            "uid": "cf-graphql"
+          },
+          "type": "graphql",
+          "source": "url",
+          "url": "https://api.cloudflare.com/client/v4/graphql",
+          "parser": "backend",
+          "format": "timeseries",
+          "root_selector": "data.viewer.accounts[0].rumPageloadEventsAdaptiveGroups",
+          "columns": [
+            {
+              "selector": "dimensions.datetimeHour",
+              "text": "Time",
+              "type": "timestamp"
+            },
+            {
+              "selector": "count",
+              "text": "blog.paulserban.eu",
+              "type": "number"
+            }
+          ],
+          "filters": [],
+          "url_options": {
+            "method": "POST",
+            "body_type": "graphql",
+            "body_content_type": "application/json",
+            "body_graphql_query": "query RumHourly($accountTag: string!, $host: string!, $start: Time!, $end: Time!) {\n  viewer {\n    accounts(filter: { accountTag: $accountTag }) {\n      rumPageloadEventsAdaptiveGroups(\n        limit: 5000\n        filter: { datetime_geq: $start, datetime_leq: $end, requestHost: $host }\n        orderBy: [datetimeHour_ASC]\n      ) {\n        count\n        sum { visits }\n        dimensions { datetimeHour }\n      }\n    }\n  }\n}",
+            "body_graphql_variables": "{\"accountTag\":\"REPLACE_CF_ACCOUNT_ID\",\"host\":\"blog.paulserban.eu\",\"start\":\"${__from:date:iso}\",\"end\":\"${__to:date:iso}\"}",
+            "data": ""
+          }
+        },
+        {
+          "refId": "C",
+          "datasource": {
+            "type": "yesoreyeram-infinity-datasource",
+            "uid": "cf-graphql"
+          },
+          "type": "graphql",
+          "source": "url",
+          "url": "https://api.cloudflare.com/client/v4/graphql",
+          "parser": "backend",
+          "format": "timeseries",
+          "root_selector": "data.viewer.accounts[0].rumPageloadEventsAdaptiveGroups",
+          "columns": [
+            {
+              "selector": "dimensions.datetimeHour",
+              "text": "Time",
+              "type": "timestamp"
+            },
+            {
+              "selector": "count",
+              "text": "news-feed.paulserban.eu",
+              "type": "number"
+            }
+          ],
+          "filters": [],
+          "url_options": {
+            "method": "POST",
+            "body_type": "graphql",
+            "body_content_type": "application/json",
+            "body_graphql_query": "query RumHourly($accountTag: string!, $host: string!, $start: Time!, $end: Time!) {\n  viewer {\n    accounts(filter: { accountTag: $accountTag }) {\n      rumPageloadEventsAdaptiveGroups(\n        limit: 5000\n        filter: { datetime_geq: $start, datetime_leq: $end, requestHost: $host }\n        orderBy: [datetimeHour_ASC]\n      ) {\n        count\n        sum { visits }\n        dimensions { datetimeHour }\n      }\n    }\n  }\n}",
+            "body_graphql_variables": "{\"accountTag\":\"REPLACE_CF_ACCOUNT_ID\",\"host\":\"news-feed.paulserban.eu\",\"start\":\"${__from:date:iso}\",\"end\":\"${__to:date:iso}\"}",
+            "data": ""
+          }
+        },
+        {
+          "refId": "D",
+          "datasource": {
+            "type": "yesoreyeram-infinity-datasource",
+            "uid": "cf-graphql"
+          },
+          "type": "graphql",
+          "source": "url",
+          "url": "https://api.cloudflare.com/client/v4/graphql",
+          "parser": "backend",
+          "format": "timeseries",
+          "root_selector": "data.viewer.accounts[0].rumPageloadEventsAdaptiveGroups",
+          "columns": [
+            {
+              "selector": "dimensions.datetimeHour",
+              "text": "Time",
+              "type": "timestamp"
+            },
+            {
+              "selector": "count",
+              "text": "quiz.paulserban.eu",
+              "type": "number"
+            }
+          ],
+          "filters": [],
+          "url_options": {
+            "method": "POST",
+            "body_type": "graphql",
+            "body_content_type": "application/json",
+            "body_graphql_query": "query RumHourly($accountTag: string!, $host: string!, $start: Time!, $end: Time!) {\n  viewer {\n    accounts(filter: { accountTag: $accountTag }) {\n      rumPageloadEventsAdaptiveGroups(\n        limit: 5000\n        filter: { datetime_geq: $start, datetime_leq: $end, requestHost: $host }\n        orderBy: [datetimeHour_ASC]\n      ) {\n        count\n        sum { visits }\n        dimensions { datetimeHour }\n      }\n    }\n  }\n}",
+            "body_graphql_variables": "{\"accountTag\":\"REPLACE_CF_ACCOUNT_ID\",\"host\":\"quiz.paulserban.eu\",\"start\":\"${__from:date:iso}\",\"end\":\"${__to:date:iso}\"}",
+            "data": ""
+          }
+        }
+      ],
+      "title": "Page views over time",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "yesoreyeram-infinity-datasource",
+        "uid": "cf-graphql"
+      },
+      "description": "Top 20 by page-view count across the four beacon hostnames.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": false
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 8,
+        "x": 0,
+        "y": 16
+      },
+      "id": 5,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true,
+        "sortBy": [
+          {
+            "desc": true,
+            "displayName": "Page views"
+          }
+        ]
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "yesoreyeram-infinity-datasource",
+            "uid": "cf-graphql"
+          },
+          "type": "graphql",
+          "source": "url",
+          "url": "https://api.cloudflare.com/client/v4/graphql",
+          "parser": "backend",
+          "format": "table",
+          "root_selector": "data.viewer.accounts[0].rumPageloadEventsAdaptiveGroups",
+          "columns": [
+            {
+              "selector": "dimensions.requestHost",
+              "text": "Host",
+              "type": "string"
+            },
+            {
+              "selector": "dimensions.requestPath",
+              "text": "Path",
+              "type": "string"
+            },
+            {
+              "selector": "count",
+              "text": "Page views",
+              "type": "number"
+            },
+            {
+              "selector": "sum.visits",
+              "text": "Visits",
+              "type": "number"
+            }
+          ],
+          "filters": [],
+          "url_options": {
+            "method": "POST",
+            "body_type": "graphql",
+            "body_content_type": "application/json",
+            "body_graphql_query": "query RumBreakdown($accountTag: string!, $start: Time!, $end: Time!) {\n  viewer {\n    accounts(filter: { accountTag: $accountTag }) {\n      rumPageloadEventsAdaptiveGroups(\n        limit: 20\n        filter: {\n          AND: [\n            { datetime_geq: $start, datetime_leq: $end }\n            { requestHost_in: [\"paulserban.eu\", \"blog.paulserban.eu\", \"news-feed.paulserban.eu\", \"quiz.paulserban.eu\"] }\n          ]\n        }\n        orderBy: [count_DESC]\n      ) {\n        count\n        sum { visits }\n        dimensions {\n          requestHost\n          requestPath\n        }\n      }\n    }\n  }\n}",
+            "body_graphql_variables": "{\"accountTag\":\"REPLACE_CF_ACCOUNT_ID\",\"start\":\"${__from:date:iso}\",\"end\":\"${__to:date:iso}\"}",
+            "data": ""
+          }
+        }
+      ],
+      "title": "Top paths",
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "yesoreyeram-infinity-datasource",
+        "uid": "cf-graphql"
+      },
+      "description": "Top 20 by page-view count across the four beacon hostnames.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": false
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 8,
+        "x": 8,
+        "y": 16
+      },
+      "id": 6,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true,
+        "sortBy": [
+          {
+            "desc": true,
+            "displayName": "Page views"
+          }
+        ]
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "yesoreyeram-infinity-datasource",
+            "uid": "cf-graphql"
+          },
+          "type": "graphql",
+          "source": "url",
+          "url": "https://api.cloudflare.com/client/v4/graphql",
+          "parser": "backend",
+          "format": "table",
+          "root_selector": "data.viewer.accounts[0].rumPageloadEventsAdaptiveGroups",
+          "columns": [
+            {
+              "selector": "dimensions.requestHost",
+              "text": "Host",
+              "type": "string"
+            },
+            {
+              "selector": "dimensions.refererHost",
+              "text": "Referrer host",
+              "type": "string"
+            },
+            {
+              "selector": "count",
+              "text": "Page views",
+              "type": "number"
+            },
+            {
+              "selector": "sum.visits",
+              "text": "Visits",
+              "type": "number"
+            }
+          ],
+          "filters": [],
+          "url_options": {
+            "method": "POST",
+            "body_type": "graphql",
+            "body_content_type": "application/json",
+            "body_graphql_query": "query RumBreakdown($accountTag: string!, $start: Time!, $end: Time!) {\n  viewer {\n    accounts(filter: { accountTag: $accountTag }) {\n      rumPageloadEventsAdaptiveGroups(\n        limit: 20\n        filter: {\n          AND: [\n            { datetime_geq: $start, datetime_leq: $end }\n            { requestHost_in: [\"paulserban.eu\", \"blog.paulserban.eu\", \"news-feed.paulserban.eu\", \"quiz.paulserban.eu\"] }\n          ]\n        }\n        orderBy: [count_DESC]\n      ) {\n        count\n        sum { visits }\n        dimensions {\n          requestHost\n          refererHost\n        }\n      }\n    }\n  }\n}",
+            "body_graphql_variables": "{\"accountTag\":\"REPLACE_CF_ACCOUNT_ID\",\"start\":\"${__from:date:iso}\",\"end\":\"${__to:date:iso}\"}",
+            "data": ""
+          }
+        }
+      ],
+      "title": "Top referrers",
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "yesoreyeram-infinity-datasource",
+        "uid": "cf-graphql"
+      },
+      "description": "Top 20 by page-view count across the four beacon hostnames.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": false
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 8,
+        "x": 16,
+        "y": 16
+      },
+      "id": 7,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true,
+        "sortBy": [
+          {
+            "desc": true,
+            "displayName": "Page views"
+          }
+        ]
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "yesoreyeram-infinity-datasource",
+            "uid": "cf-graphql"
+          },
+          "type": "graphql",
+          "source": "url",
+          "url": "https://api.cloudflare.com/client/v4/graphql",
+          "parser": "backend",
+          "format": "table",
+          "root_selector": "data.viewer.accounts[0].rumPageloadEventsAdaptiveGroups",
+          "columns": [
+            {
+              "selector": "dimensions.requestHost",
+              "text": "Host",
+              "type": "string"
+            },
+            {
+              "selector": "dimensions.userAgentBrowser",
+              "text": "Browser",
+              "type": "string"
+            },
+            {
+              "selector": "count",
+              "text": "Page views",
+              "type": "number"
+            },
+            {
+              "selector": "sum.visits",
+              "text": "Visits",
+              "type": "number"
+            }
+          ],
+          "filters": [],
+          "url_options": {
+            "method": "POST",
+            "body_type": "graphql",
+            "body_content_type": "application/json",
+            "body_graphql_query": "query RumBreakdown($accountTag: string!, $start: Time!, $end: Time!) {\n  viewer {\n    accounts(filter: { accountTag: $accountTag }) {\n      rumPageloadEventsAdaptiveGroups(\n        limit: 20\n        filter: {\n          AND: [\n            { datetime_geq: $start, datetime_leq: $end }\n            { requestHost_in: [\"paulserban.eu\", \"blog.paulserban.eu\", \"news-feed.paulserban.eu\", \"quiz.paulserban.eu\"] }\n          ]\n        }\n        orderBy: [count_DESC]\n      ) {\n        count\n        sum { visits }\n        dimensions {\n          requestHost\n          userAgentBrowser\n        }\n      }\n    }\n  }\n}",
+            "body_graphql_variables": "{\"accountTag\":\"REPLACE_CF_ACCOUNT_ID\",\"start\":\"${__from:date:iso}\",\"end\":\"${__to:date:iso}\"}",
+            "data": ""
+          }
+        }
+      ],
+      "title": "Browsers",
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "yesoreyeram-infinity-datasource",
+        "uid": "cf-graphql"
+      },
+      "description": "Top 20 by page-view count across the four beacon hostnames.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": false
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 12,
+        "x": 0,
+        "y": 26
+      },
+      "id": 8,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true,
+        "sortBy": [
+          {
+            "desc": true,
+            "displayName": "Page views"
+          }
+        ]
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "yesoreyeram-infinity-datasource",
+            "uid": "cf-graphql"
+          },
+          "type": "graphql",
+          "source": "url",
+          "url": "https://api.cloudflare.com/client/v4/graphql",
+          "parser": "backend",
+          "format": "table",
+          "root_selector": "data.viewer.accounts[0].rumPageloadEventsAdaptiveGroups",
+          "columns": [
+            {
+              "selector": "dimensions.requestHost",
+              "text": "Host",
+              "type": "string"
+            },
+            {
+              "selector": "dimensions.userAgentOS",
+              "text": "OS",
+              "type": "string"
+            },
+            {
+              "selector": "count",
+              "text": "Page views",
+              "type": "number"
+            },
+            {
+              "selector": "sum.visits",
+              "text": "Visits",
+              "type": "number"
+            }
+          ],
+          "filters": [],
+          "url_options": {
+            "method": "POST",
+            "body_type": "graphql",
+            "body_content_type": "application/json",
+            "body_graphql_query": "query RumBreakdown($accountTag: string!, $start: Time!, $end: Time!) {\n  viewer {\n    accounts(filter: { accountTag: $accountTag }) {\n      rumPageloadEventsAdaptiveGroups(\n        limit: 20\n        filter: {\n          AND: [\n            { datetime_geq: $start, datetime_leq: $end }\n            { requestHost_in: [\"paulserban.eu\", \"blog.paulserban.eu\", \"news-feed.paulserban.eu\", \"quiz.paulserban.eu\"] }\n          ]\n        }\n        orderBy: [count_DESC]\n      ) {\n        count\n        sum { visits }\n        dimensions {\n          requestHost\n          userAgentOS\n        }\n      }\n    }\n  }\n}",
+            "body_graphql_variables": "{\"accountTag\":\"REPLACE_CF_ACCOUNT_ID\",\"start\":\"${__from:date:iso}\",\"end\":\"${__to:date:iso}\"}",
+            "data": ""
+          }
+        }
+      ],
+      "title": "Operating systems",
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "yesoreyeram-infinity-datasource",
+        "uid": "cf-graphql"
+      },
+      "description": "Top 20 by page-view count across the four beacon hostnames.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": false
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 12,
+        "x": 12,
+        "y": 26
+      },
+      "id": 9,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true,
+        "sortBy": [
+          {
+            "desc": true,
+            "displayName": "Page views"
+          }
+        ]
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "yesoreyeram-infinity-datasource",
+            "uid": "cf-graphql"
+          },
+          "type": "graphql",
+          "source": "url",
+          "url": "https://api.cloudflare.com/client/v4/graphql",
+          "parser": "backend",
+          "format": "table",
+          "root_selector": "data.viewer.accounts[0].rumPageloadEventsAdaptiveGroups",
+          "columns": [
+            {
+              "selector": "dimensions.requestHost",
+              "text": "Host",
+              "type": "string"
+            },
+            {
+              "selector": "dimensions.countryName",
+              "text": "Country",
+              "type": "string"
+            },
+            {
+              "selector": "count",
+              "text": "Page views",
+              "type": "number"
+            },
+            {
+              "selector": "sum.visits",
+              "text": "Visits",
+              "type": "number"
+            }
+          ],
+          "filters": [],
+          "url_options": {
+            "method": "POST",
+            "body_type": "graphql",
+            "body_content_type": "application/json",
+            "body_graphql_query": "query RumBreakdown($accountTag: string!, $start: Time!, $end: Time!) {\n  viewer {\n    accounts(filter: { accountTag: $accountTag }) {\n      rumPageloadEventsAdaptiveGroups(\n        limit: 20\n        filter: {\n          AND: [\n            { datetime_geq: $start, datetime_leq: $end }\n            { requestHost_in: [\"paulserban.eu\", \"blog.paulserban.eu\", \"news-feed.paulserban.eu\", \"quiz.paulserban.eu\"] }\n          ]\n        }\n        orderBy: [count_DESC]\n      ) {\n        count\n        sum { visits }\n        dimensions {\n          requestHost\n          countryName\n        }\n      }\n    }\n  }\n}",
+            "body_graphql_variables": "{\"accountTag\":\"REPLACE_CF_ACCOUNT_ID\",\"start\":\"${__from:date:iso}\",\"end\":\"${__to:date:iso}\"}",
+            "data": ""
+          }
+        }
+      ],
+      "title": "Countries",
+      "type": "table"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 36
+      },
+      "id": 10,
+      "panels": [],
+      "title": "Core Web Vitals (Cloudflare RUM, p75)",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "yesoreyeram-infinity-datasource",
+        "uid": "cf-graphql"
+      },
+      "description": "Largest Contentful Paint p75. Cloudflare GraphQL returns microseconds (not ms). Good < 2.5s, poor \u2265 4s. Chromium-first. -1 = no sample.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "decimals": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 2500000
+              },
+              {
+                "color": "red",
+                "value": 4000000
+              }
+            ]
+          },
+          "unit": "\u00b5s",
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "-1": {
+                  "text": "no sample",
+                  "index": 0
+                }
+              }
+            }
+          ]
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 8,
+        "x": 0,
+        "y": 37
+      },
+      "id": 11,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "yesoreyeram-infinity-datasource",
+            "uid": "cf-graphql"
+          },
+          "type": "graphql",
+          "source": "url",
+          "url": "https://api.cloudflare.com/client/v4/graphql",
+          "parser": "backend",
+          "format": "table",
+          "root_selector": "data.viewer.accounts[0].rumWebVitalsEventsAdaptiveGroups",
+          "columns": [
+            {
+              "selector": "quantiles.largestContentfulPaintP75",
+              "text": "paulserban.eu",
+              "type": "number"
+            }
+          ],
+          "filters": [],
+          "url_options": {
+            "method": "POST",
+            "body_type": "graphql",
+            "body_content_type": "application/json",
+            "body_graphql_query": "query RumCwv($accountTag: string!, $host: string!, $start: Time!, $end: Time!) {\n  viewer {\n    accounts(filter: { accountTag: $accountTag }) {\n      rumWebVitalsEventsAdaptiveGroups(\n        limit: 1\n        filter: { datetime_geq: $start, datetime_leq: $end, requestHost: $host }\n      ) {\n        count\n        quantiles {\n          largestContentfulPaintP75\n          interactionToNextPaintP75\n          cumulativeLayoutShiftP75\n        }\n      }\n    }\n  }\n}",
+            "body_graphql_variables": "{\"accountTag\":\"REPLACE_CF_ACCOUNT_ID\",\"host\":\"paulserban.eu\",\"start\":\"${__from:date:iso}\",\"end\":\"${__to:date:iso}\"}",
+            "data": ""
+          }
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "yesoreyeram-infinity-datasource",
+            "uid": "cf-graphql"
+          },
+          "type": "graphql",
+          "source": "url",
+          "url": "https://api.cloudflare.com/client/v4/graphql",
+          "parser": "backend",
+          "format": "table",
+          "root_selector": "data.viewer.accounts[0].rumWebVitalsEventsAdaptiveGroups",
+          "columns": [
+            {
+              "selector": "quantiles.largestContentfulPaintP75",
+              "text": "blog.paulserban.eu",
+              "type": "number"
+            }
+          ],
+          "filters": [],
+          "url_options": {
+            "method": "POST",
+            "body_type": "graphql",
+            "body_content_type": "application/json",
+            "body_graphql_query": "query RumCwv($accountTag: string!, $host: string!, $start: Time!, $end: Time!) {\n  viewer {\n    accounts(filter: { accountTag: $accountTag }) {\n      rumWebVitalsEventsAdaptiveGroups(\n        limit: 1\n        filter: { datetime_geq: $start, datetime_leq: $end, requestHost: $host }\n      ) {\n        count\n        quantiles {\n          largestContentfulPaintP75\n          interactionToNextPaintP75\n          cumulativeLayoutShiftP75\n        }\n      }\n    }\n  }\n}",
+            "body_graphql_variables": "{\"accountTag\":\"REPLACE_CF_ACCOUNT_ID\",\"host\":\"blog.paulserban.eu\",\"start\":\"${__from:date:iso}\",\"end\":\"${__to:date:iso}\"}",
+            "data": ""
+          }
+        },
+        {
+          "refId": "C",
+          "datasource": {
+            "type": "yesoreyeram-infinity-datasource",
+            "uid": "cf-graphql"
+          },
+          "type": "graphql",
+          "source": "url",
+          "url": "https://api.cloudflare.com/client/v4/graphql",
+          "parser": "backend",
+          "format": "table",
+          "root_selector": "data.viewer.accounts[0].rumWebVitalsEventsAdaptiveGroups",
+          "columns": [
+            {
+              "selector": "quantiles.largestContentfulPaintP75",
+              "text": "news-feed.paulserban.eu",
+              "type": "number"
+            }
+          ],
+          "filters": [],
+          "url_options": {
+            "method": "POST",
+            "body_type": "graphql",
+            "body_content_type": "application/json",
+            "body_graphql_query": "query RumCwv($accountTag: string!, $host: string!, $start: Time!, $end: Time!) {\n  viewer {\n    accounts(filter: { accountTag: $accountTag }) {\n      rumWebVitalsEventsAdaptiveGroups(\n        limit: 1\n        filter: { datetime_geq: $start, datetime_leq: $end, requestHost: $host }\n      ) {\n        count\n        quantiles {\n          largestContentfulPaintP75\n          interactionToNextPaintP75\n          cumulativeLayoutShiftP75\n        }\n      }\n    }\n  }\n}",
+            "body_graphql_variables": "{\"accountTag\":\"REPLACE_CF_ACCOUNT_ID\",\"host\":\"news-feed.paulserban.eu\",\"start\":\"${__from:date:iso}\",\"end\":\"${__to:date:iso}\"}",
+            "data": ""
+          }
+        },
+        {
+          "refId": "D",
+          "datasource": {
+            "type": "yesoreyeram-infinity-datasource",
+            "uid": "cf-graphql"
+          },
+          "type": "graphql",
+          "source": "url",
+          "url": "https://api.cloudflare.com/client/v4/graphql",
+          "parser": "backend",
+          "format": "table",
+          "root_selector": "data.viewer.accounts[0].rumWebVitalsEventsAdaptiveGroups",
+          "columns": [
+            {
+              "selector": "quantiles.largestContentfulPaintP75",
+              "text": "quiz.paulserban.eu",
+              "type": "number"
+            }
+          ],
+          "filters": [],
+          "url_options": {
+            "method": "POST",
+            "body_type": "graphql",
+            "body_content_type": "application/json",
+            "body_graphql_query": "query RumCwv($accountTag: string!, $host: string!, $start: Time!, $end: Time!) {\n  viewer {\n    accounts(filter: { accountTag: $accountTag }) {\n      rumWebVitalsEventsAdaptiveGroups(\n        limit: 1\n        filter: { datetime_geq: $start, datetime_leq: $end, requestHost: $host }\n      ) {\n        count\n        quantiles {\n          largestContentfulPaintP75\n          interactionToNextPaintP75\n          cumulativeLayoutShiftP75\n        }\n      }\n    }\n  }\n}",
+            "body_graphql_variables": "{\"accountTag\":\"REPLACE_CF_ACCOUNT_ID\",\"host\":\"quiz.paulserban.eu\",\"start\":\"${__from:date:iso}\",\"end\":\"${__to:date:iso}\"}",
+            "data": ""
+          }
+        }
+      ],
+      "title": "LCP p75",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "yesoreyeram-infinity-datasource",
+        "uid": "cf-graphql"
+      },
+      "description": "Interaction to Next Paint p75. Cloudflare GraphQL returns microseconds (not ms). Good < 200ms, poor \u2265 500ms. -1 = no interaction sample.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "decimals": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 200000
+              },
+              {
+                "color": "red",
+                "value": 500000
+              }
+            ]
+          },
+          "unit": "\u00b5s",
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "-1": {
+                  "text": "no sample",
+                  "index": 0
+                }
+              }
+            }
+          ]
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 8,
+        "x": 8,
+        "y": 37
+      },
+      "id": 12,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "yesoreyeram-infinity-datasource",
+            "uid": "cf-graphql"
+          },
+          "type": "graphql",
+          "source": "url",
+          "url": "https://api.cloudflare.com/client/v4/graphql",
+          "parser": "backend",
+          "format": "table",
+          "root_selector": "data.viewer.accounts[0].rumWebVitalsEventsAdaptiveGroups",
+          "columns": [
+            {
+              "selector": "quantiles.interactionToNextPaintP75",
+              "text": "paulserban.eu",
+              "type": "number"
+            }
+          ],
+          "filters": [],
+          "url_options": {
+            "method": "POST",
+            "body_type": "graphql",
+            "body_content_type": "application/json",
+            "body_graphql_query": "query RumCwv($accountTag: string!, $host: string!, $start: Time!, $end: Time!) {\n  viewer {\n    accounts(filter: { accountTag: $accountTag }) {\n      rumWebVitalsEventsAdaptiveGroups(\n        limit: 1\n        filter: { datetime_geq: $start, datetime_leq: $end, requestHost: $host }\n      ) {\n        count\n        quantiles {\n          largestContentfulPaintP75\n          interactionToNextPaintP75\n          cumulativeLayoutShiftP75\n        }\n      }\n    }\n  }\n}",
+            "body_graphql_variables": "{\"accountTag\":\"REPLACE_CF_ACCOUNT_ID\",\"host\":\"paulserban.eu\",\"start\":\"${__from:date:iso}\",\"end\":\"${__to:date:iso}\"}",
+            "data": ""
+          }
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "yesoreyeram-infinity-datasource",
+            "uid": "cf-graphql"
+          },
+          "type": "graphql",
+          "source": "url",
+          "url": "https://api.cloudflare.com/client/v4/graphql",
+          "parser": "backend",
+          "format": "table",
+          "root_selector": "data.viewer.accounts[0].rumWebVitalsEventsAdaptiveGroups",
+          "columns": [
+            {
+              "selector": "quantiles.interactionToNextPaintP75",
+              "text": "blog.paulserban.eu",
+              "type": "number"
+            }
+          ],
+          "filters": [],
+          "url_options": {
+            "method": "POST",
+            "body_type": "graphql",
+            "body_content_type": "application/json",
+            "body_graphql_query": "query RumCwv($accountTag: string!, $host: string!, $start: Time!, $end: Time!) {\n  viewer {\n    accounts(filter: { accountTag: $accountTag }) {\n      rumWebVitalsEventsAdaptiveGroups(\n        limit: 1\n        filter: { datetime_geq: $start, datetime_leq: $end, requestHost: $host }\n      ) {\n        count\n        quantiles {\n          largestContentfulPaintP75\n          interactionToNextPaintP75\n          cumulativeLayoutShiftP75\n        }\n      }\n    }\n  }\n}",
+            "body_graphql_variables": "{\"accountTag\":\"REPLACE_CF_ACCOUNT_ID\",\"host\":\"blog.paulserban.eu\",\"start\":\"${__from:date:iso}\",\"end\":\"${__to:date:iso}\"}",
+            "data": ""
+          }
+        },
+        {
+          "refId": "C",
+          "datasource": {
+            "type": "yesoreyeram-infinity-datasource",
+            "uid": "cf-graphql"
+          },
+          "type": "graphql",
+          "source": "url",
+          "url": "https://api.cloudflare.com/client/v4/graphql",
+          "parser": "backend",
+          "format": "table",
+          "root_selector": "data.viewer.accounts[0].rumWebVitalsEventsAdaptiveGroups",
+          "columns": [
+            {
+              "selector": "quantiles.interactionToNextPaintP75",
+              "text": "news-feed.paulserban.eu",
+              "type": "number"
+            }
+          ],
+          "filters": [],
+          "url_options": {
+            "method": "POST",
+            "body_type": "graphql",
+            "body_content_type": "application/json",
+            "body_graphql_query": "query RumCwv($accountTag: string!, $host: string!, $start: Time!, $end: Time!) {\n  viewer {\n    accounts(filter: { accountTag: $accountTag }) {\n      rumWebVitalsEventsAdaptiveGroups(\n        limit: 1\n        filter: { datetime_geq: $start, datetime_leq: $end, requestHost: $host }\n      ) {\n        count\n        quantiles {\n          largestContentfulPaintP75\n          interactionToNextPaintP75\n          cumulativeLayoutShiftP75\n        }\n      }\n    }\n  }\n}",
+            "body_graphql_variables": "{\"accountTag\":\"REPLACE_CF_ACCOUNT_ID\",\"host\":\"news-feed.paulserban.eu\",\"start\":\"${__from:date:iso}\",\"end\":\"${__to:date:iso}\"}",
+            "data": ""
+          }
+        },
+        {
+          "refId": "D",
+          "datasource": {
+            "type": "yesoreyeram-infinity-datasource",
+            "uid": "cf-graphql"
+          },
+          "type": "graphql",
+          "source": "url",
+          "url": "https://api.cloudflare.com/client/v4/graphql",
+          "parser": "backend",
+          "format": "table",
+          "root_selector": "data.viewer.accounts[0].rumWebVitalsEventsAdaptiveGroups",
+          "columns": [
+            {
+              "selector": "quantiles.interactionToNextPaintP75",
+              "text": "quiz.paulserban.eu",
+              "type": "number"
+            }
+          ],
+          "filters": [],
+          "url_options": {
+            "method": "POST",
+            "body_type": "graphql",
+            "body_content_type": "application/json",
+            "body_graphql_query": "query RumCwv($accountTag: string!, $host: string!, $start: Time!, $end: Time!) {\n  viewer {\n    accounts(filter: { accountTag: $accountTag }) {\n      rumWebVitalsEventsAdaptiveGroups(\n        limit: 1\n        filter: { datetime_geq: $start, datetime_leq: $end, requestHost: $host }\n      ) {\n        count\n        quantiles {\n          largestContentfulPaintP75\n          interactionToNextPaintP75\n          cumulativeLayoutShiftP75\n        }\n      }\n    }\n  }\n}",
+            "body_graphql_variables": "{\"accountTag\":\"REPLACE_CF_ACCOUNT_ID\",\"host\":\"quiz.paulserban.eu\",\"start\":\"${__from:date:iso}\",\"end\":\"${__to:date:iso}\"}",
+            "data": ""
+          }
+        }
+      ],
+      "title": "INP p75",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "yesoreyeram-infinity-datasource",
+        "uid": "cf-graphql"
+      },
+      "description": "Cumulative Layout Shift p75. Good < 0.1, poor \u2265 0.25.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "decimals": 2,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 0.1
+              },
+              {
+                "color": "red",
+                "value": 0.25
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 8,
+        "x": 16,
+        "y": 37
+      },
+      "id": 13,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "yesoreyeram-infinity-datasource",
+            "uid": "cf-graphql"
+          },
+          "type": "graphql",
+          "source": "url",
+          "url": "https://api.cloudflare.com/client/v4/graphql",
+          "parser": "backend",
+          "format": "table",
+          "root_selector": "data.viewer.accounts[0].rumWebVitalsEventsAdaptiveGroups",
+          "columns": [
+            {
+              "selector": "quantiles.cumulativeLayoutShiftP75",
+              "text": "paulserban.eu",
+              "type": "number"
+            }
+          ],
+          "filters": [],
+          "url_options": {
+            "method": "POST",
+            "body_type": "graphql",
+            "body_content_type": "application/json",
+            "body_graphql_query": "query RumCwv($accountTag: string!, $host: string!, $start: Time!, $end: Time!) {\n  viewer {\n    accounts(filter: { accountTag: $accountTag }) {\n      rumWebVitalsEventsAdaptiveGroups(\n        limit: 1\n        filter: { datetime_geq: $start, datetime_leq: $end, requestHost: $host }\n      ) {\n        count\n        quantiles {\n          largestContentfulPaintP75\n          interactionToNextPaintP75\n          cumulativeLayoutShiftP75\n        }\n      }\n    }\n  }\n}",
+            "body_graphql_variables": "{\"accountTag\":\"REPLACE_CF_ACCOUNT_ID\",\"host\":\"paulserban.eu\",\"start\":\"${__from:date:iso}\",\"end\":\"${__to:date:iso}\"}",
+            "data": ""
+          }
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "yesoreyeram-infinity-datasource",
+            "uid": "cf-graphql"
+          },
+          "type": "graphql",
+          "source": "url",
+          "url": "https://api.cloudflare.com/client/v4/graphql",
+          "parser": "backend",
+          "format": "table",
+          "root_selector": "data.viewer.accounts[0].rumWebVitalsEventsAdaptiveGroups",
+          "columns": [
+            {
+              "selector": "quantiles.cumulativeLayoutShiftP75",
+              "text": "blog.paulserban.eu",
+              "type": "number"
+            }
+          ],
+          "filters": [],
+          "url_options": {
+            "method": "POST",
+            "body_type": "graphql",
+            "body_content_type": "application/json",
+            "body_graphql_query": "query RumCwv($accountTag: string!, $host: string!, $start: Time!, $end: Time!) {\n  viewer {\n    accounts(filter: { accountTag: $accountTag }) {\n      rumWebVitalsEventsAdaptiveGroups(\n        limit: 1\n        filter: { datetime_geq: $start, datetime_leq: $end, requestHost: $host }\n      ) {\n        count\n        quantiles {\n          largestContentfulPaintP75\n          interactionToNextPaintP75\n          cumulativeLayoutShiftP75\n        }\n      }\n    }\n  }\n}",
+            "body_graphql_variables": "{\"accountTag\":\"REPLACE_CF_ACCOUNT_ID\",\"host\":\"blog.paulserban.eu\",\"start\":\"${__from:date:iso}\",\"end\":\"${__to:date:iso}\"}",
+            "data": ""
+          }
+        },
+        {
+          "refId": "C",
+          "datasource": {
+            "type": "yesoreyeram-infinity-datasource",
+            "uid": "cf-graphql"
+          },
+          "type": "graphql",
+          "source": "url",
+          "url": "https://api.cloudflare.com/client/v4/graphql",
+          "parser": "backend",
+          "format": "table",
+          "root_selector": "data.viewer.accounts[0].rumWebVitalsEventsAdaptiveGroups",
+          "columns": [
+            {
+              "selector": "quantiles.cumulativeLayoutShiftP75",
+              "text": "news-feed.paulserban.eu",
+              "type": "number"
+            }
+          ],
+          "filters": [],
+          "url_options": {
+            "method": "POST",
+            "body_type": "graphql",
+            "body_content_type": "application/json",
+            "body_graphql_query": "query RumCwv($accountTag: string!, $host: string!, $start: Time!, $end: Time!) {\n  viewer {\n    accounts(filter: { accountTag: $accountTag }) {\n      rumWebVitalsEventsAdaptiveGroups(\n        limit: 1\n        filter: { datetime_geq: $start, datetime_leq: $end, requestHost: $host }\n      ) {\n        count\n        quantiles {\n          largestContentfulPaintP75\n          interactionToNextPaintP75\n          cumulativeLayoutShiftP75\n        }\n      }\n    }\n  }\n}",
+            "body_graphql_variables": "{\"accountTag\":\"REPLACE_CF_ACCOUNT_ID\",\"host\":\"news-feed.paulserban.eu\",\"start\":\"${__from:date:iso}\",\"end\":\"${__to:date:iso}\"}",
+            "data": ""
+          }
+        },
+        {
+          "refId": "D",
+          "datasource": {
+            "type": "yesoreyeram-infinity-datasource",
+            "uid": "cf-graphql"
+          },
+          "type": "graphql",
+          "source": "url",
+          "url": "https://api.cloudflare.com/client/v4/graphql",
+          "parser": "backend",
+          "format": "table",
+          "root_selector": "data.viewer.accounts[0].rumWebVitalsEventsAdaptiveGroups",
+          "columns": [
+            {
+              "selector": "quantiles.cumulativeLayoutShiftP75",
+              "text": "quiz.paulserban.eu",
+              "type": "number"
+            }
+          ],
+          "filters": [],
+          "url_options": {
+            "method": "POST",
+            "body_type": "graphql",
+            "body_content_type": "application/json",
+            "body_graphql_query": "query RumCwv($accountTag: string!, $host: string!, $start: Time!, $end: Time!) {\n  viewer {\n    accounts(filter: { accountTag: $accountTag }) {\n      rumWebVitalsEventsAdaptiveGroups(\n        limit: 1\n        filter: { datetime_geq: $start, datetime_leq: $end, requestHost: $host }\n      ) {\n        count\n        quantiles {\n          largestContentfulPaintP75\n          interactionToNextPaintP75\n          cumulativeLayoutShiftP75\n        }\n      }\n    }\n  }\n}",
+            "body_graphql_variables": "{\"accountTag\":\"REPLACE_CF_ACCOUNT_ID\",\"host\":\"quiz.paulserban.eu\",\"start\":\"${__from:date:iso}\",\"end\":\"${__to:date:iso}\"}",
+            "data": ""
+          }
+        }
+      ],
+      "title": "CLS p75",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "yesoreyeram-infinity-datasource",
+        "uid": "cf-graphql"
+      },
+      "description": "Largest Contentful Paint p75. Cloudflare GraphQL returns microseconds (not ms). Good < 2.5s, poor \u2265 4s. Chromium-first. -1 = no sample.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 15,
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "showPoints": "never",
+            "spanNulls": true,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            }
+          },
+          "unit": "\u00b5s",
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "-1": {
+                  "text": "no sample",
+                  "index": 0
+                }
+              }
+            }
+          ]
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 8,
+        "x": 0,
+        "y": 42
+      },
+      "id": 14,
+      "options": {
+        "legend": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "yesoreyeram-infinity-datasource",
+            "uid": "cf-graphql"
+          },
+          "type": "graphql",
+          "source": "url",
+          "url": "https://api.cloudflare.com/client/v4/graphql",
+          "parser": "backend",
+          "format": "timeseries",
+          "root_selector": "data.viewer.accounts[0].rumWebVitalsEventsAdaptiveGroups",
+          "columns": [
+            {
+              "selector": "dimensions.datetimeHour",
+              "text": "Time",
+              "type": "timestamp"
+            },
+            {
+              "selector": "quantiles.largestContentfulPaintP75",
+              "text": "paulserban.eu",
+              "type": "number"
+            }
+          ],
+          "filters": [],
+          "url_options": {
+            "method": "POST",
+            "body_type": "graphql",
+            "body_content_type": "application/json",
+            "body_graphql_query": "query RumCwvHourly($accountTag: string!, $host: string!, $start: Time!, $end: Time!) {\n  viewer {\n    accounts(filter: { accountTag: $accountTag }) {\n      rumWebVitalsEventsAdaptiveGroups(\n        limit: 5000\n        filter: { datetime_geq: $start, datetime_leq: $end, requestHost: $host }\n        orderBy: [datetimeHour_ASC]\n      ) {\n        quantiles {\n          largestContentfulPaintP75\n          interactionToNextPaintP75\n          cumulativeLayoutShiftP75\n        }\n        dimensions { datetimeHour }\n      }\n    }\n  }\n}",
+            "body_graphql_variables": "{\"accountTag\":\"REPLACE_CF_ACCOUNT_ID\",\"host\":\"paulserban.eu\",\"start\":\"${__from:date:iso}\",\"end\":\"${__to:date:iso}\"}",
+            "data": ""
+          }
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "yesoreyeram-infinity-datasource",
+            "uid": "cf-graphql"
+          },
+          "type": "graphql",
+          "source": "url",
+          "url": "https://api.cloudflare.com/client/v4/graphql",
+          "parser": "backend",
+          "format": "timeseries",
+          "root_selector": "data.viewer.accounts[0].rumWebVitalsEventsAdaptiveGroups",
+          "columns": [
+            {
+              "selector": "dimensions.datetimeHour",
+              "text": "Time",
+              "type": "timestamp"
+            },
+            {
+              "selector": "quantiles.largestContentfulPaintP75",
+              "text": "blog.paulserban.eu",
+              "type": "number"
+            }
+          ],
+          "filters": [],
+          "url_options": {
+            "method": "POST",
+            "body_type": "graphql",
+            "body_content_type": "application/json",
+            "body_graphql_query": "query RumCwvHourly($accountTag: string!, $host: string!, $start: Time!, $end: Time!) {\n  viewer {\n    accounts(filter: { accountTag: $accountTag }) {\n      rumWebVitalsEventsAdaptiveGroups(\n        limit: 5000\n        filter: { datetime_geq: $start, datetime_leq: $end, requestHost: $host }\n        orderBy: [datetimeHour_ASC]\n      ) {\n        quantiles {\n          largestContentfulPaintP75\n          interactionToNextPaintP75\n          cumulativeLayoutShiftP75\n        }\n        dimensions { datetimeHour }\n      }\n    }\n  }\n}",
+            "body_graphql_variables": "{\"accountTag\":\"REPLACE_CF_ACCOUNT_ID\",\"host\":\"blog.paulserban.eu\",\"start\":\"${__from:date:iso}\",\"end\":\"${__to:date:iso}\"}",
+            "data": ""
+          }
+        },
+        {
+          "refId": "C",
+          "datasource": {
+            "type": "yesoreyeram-infinity-datasource",
+            "uid": "cf-graphql"
+          },
+          "type": "graphql",
+          "source": "url",
+          "url": "https://api.cloudflare.com/client/v4/graphql",
+          "parser": "backend",
+          "format": "timeseries",
+          "root_selector": "data.viewer.accounts[0].rumWebVitalsEventsAdaptiveGroups",
+          "columns": [
+            {
+              "selector": "dimensions.datetimeHour",
+              "text": "Time",
+              "type": "timestamp"
+            },
+            {
+              "selector": "quantiles.largestContentfulPaintP75",
+              "text": "news-feed.paulserban.eu",
+              "type": "number"
+            }
+          ],
+          "filters": [],
+          "url_options": {
+            "method": "POST",
+            "body_type": "graphql",
+            "body_content_type": "application/json",
+            "body_graphql_query": "query RumCwvHourly($accountTag: string!, $host: string!, $start: Time!, $end: Time!) {\n  viewer {\n    accounts(filter: { accountTag: $accountTag }) {\n      rumWebVitalsEventsAdaptiveGroups(\n        limit: 5000\n        filter: { datetime_geq: $start, datetime_leq: $end, requestHost: $host }\n        orderBy: [datetimeHour_ASC]\n      ) {\n        quantiles {\n          largestContentfulPaintP75\n          interactionToNextPaintP75\n          cumulativeLayoutShiftP75\n        }\n        dimensions { datetimeHour }\n      }\n    }\n  }\n}",
+            "body_graphql_variables": "{\"accountTag\":\"REPLACE_CF_ACCOUNT_ID\",\"host\":\"news-feed.paulserban.eu\",\"start\":\"${__from:date:iso}\",\"end\":\"${__to:date:iso}\"}",
+            "data": ""
+          }
+        },
+        {
+          "refId": "D",
+          "datasource": {
+            "type": "yesoreyeram-infinity-datasource",
+            "uid": "cf-graphql"
+          },
+          "type": "graphql",
+          "source": "url",
+          "url": "https://api.cloudflare.com/client/v4/graphql",
+          "parser": "backend",
+          "format": "timeseries",
+          "root_selector": "data.viewer.accounts[0].rumWebVitalsEventsAdaptiveGroups",
+          "columns": [
+            {
+              "selector": "dimensions.datetimeHour",
+              "text": "Time",
+              "type": "timestamp"
+            },
+            {
+              "selector": "quantiles.largestContentfulPaintP75",
+              "text": "quiz.paulserban.eu",
+              "type": "number"
+            }
+          ],
+          "filters": [],
+          "url_options": {
+            "method": "POST",
+            "body_type": "graphql",
+            "body_content_type": "application/json",
+            "body_graphql_query": "query RumCwvHourly($accountTag: string!, $host: string!, $start: Time!, $end: Time!) {\n  viewer {\n    accounts(filter: { accountTag: $accountTag }) {\n      rumWebVitalsEventsAdaptiveGroups(\n        limit: 5000\n        filter: { datetime_geq: $start, datetime_leq: $end, requestHost: $host }\n        orderBy: [datetimeHour_ASC]\n      ) {\n        quantiles {\n          largestContentfulPaintP75\n          interactionToNextPaintP75\n          cumulativeLayoutShiftP75\n        }\n        dimensions { datetimeHour }\n      }\n    }\n  }\n}",
+            "body_graphql_variables": "{\"accountTag\":\"REPLACE_CF_ACCOUNT_ID\",\"host\":\"quiz.paulserban.eu\",\"start\":\"${__from:date:iso}\",\"end\":\"${__to:date:iso}\"}",
+            "data": ""
+          }
+        }
+      ],
+      "title": "LCP p75 over time",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "yesoreyeram-infinity-datasource",
+        "uid": "cf-graphql"
+      },
+      "description": "Interaction to Next Paint p75. Cloudflare GraphQL returns microseconds (not ms). Good < 200ms, poor \u2265 500ms. -1 = no interaction sample.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 15,
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "showPoints": "never",
+            "spanNulls": true,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            }
+          },
+          "unit": "\u00b5s",
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "-1": {
+                  "text": "no sample",
+                  "index": 0
+                }
+              }
+            }
+          ]
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 8,
+        "x": 8,
+        "y": 42
+      },
+      "id": 15,
+      "options": {
+        "legend": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "yesoreyeram-infinity-datasource",
+            "uid": "cf-graphql"
+          },
+          "type": "graphql",
+          "source": "url",
+          "url": "https://api.cloudflare.com/client/v4/graphql",
+          "parser": "backend",
+          "format": "timeseries",
+          "root_selector": "data.viewer.accounts[0].rumWebVitalsEventsAdaptiveGroups",
+          "columns": [
+            {
+              "selector": "dimensions.datetimeHour",
+              "text": "Time",
+              "type": "timestamp"
+            },
+            {
+              "selector": "quantiles.interactionToNextPaintP75",
+              "text": "paulserban.eu",
+              "type": "number"
+            }
+          ],
+          "filters": [],
+          "url_options": {
+            "method": "POST",
+            "body_type": "graphql",
+            "body_content_type": "application/json",
+            "body_graphql_query": "query RumCwvHourly($accountTag: string!, $host: string!, $start: Time!, $end: Time!) {\n  viewer {\n    accounts(filter: { accountTag: $accountTag }) {\n      rumWebVitalsEventsAdaptiveGroups(\n        limit: 5000\n        filter: { datetime_geq: $start, datetime_leq: $end, requestHost: $host }\n        orderBy: [datetimeHour_ASC]\n      ) {\n        quantiles {\n          largestContentfulPaintP75\n          interactionToNextPaintP75\n          cumulativeLayoutShiftP75\n        }\n        dimensions { datetimeHour }\n      }\n    }\n  }\n}",
+            "body_graphql_variables": "{\"accountTag\":\"REPLACE_CF_ACCOUNT_ID\",\"host\":\"paulserban.eu\",\"start\":\"${__from:date:iso}\",\"end\":\"${__to:date:iso}\"}",
+            "data": ""
+          }
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "yesoreyeram-infinity-datasource",
+            "uid": "cf-graphql"
+          },
+          "type": "graphql",
+          "source": "url",
+          "url": "https://api.cloudflare.com/client/v4/graphql",
+          "parser": "backend",
+          "format": "timeseries",
+          "root_selector": "data.viewer.accounts[0].rumWebVitalsEventsAdaptiveGroups",
+          "columns": [
+            {
+              "selector": "dimensions.datetimeHour",
+              "text": "Time",
+              "type": "timestamp"
+            },
+            {
+              "selector": "quantiles.interactionToNextPaintP75",
+              "text": "blog.paulserban.eu",
+              "type": "number"
+            }
+          ],
+          "filters": [],
+          "url_options": {
+            "method": "POST",
+            "body_type": "graphql",
+            "body_content_type": "application/json",
+            "body_graphql_query": "query RumCwvHourly($accountTag: string!, $host: string!, $start: Time!, $end: Time!) {\n  viewer {\n    accounts(filter: { accountTag: $accountTag }) {\n      rumWebVitalsEventsAdaptiveGroups(\n        limit: 5000\n        filter: { datetime_geq: $start, datetime_leq: $end, requestHost: $host }\n        orderBy: [datetimeHour_ASC]\n      ) {\n        quantiles {\n          largestContentfulPaintP75\n          interactionToNextPaintP75\n          cumulativeLayoutShiftP75\n        }\n        dimensions { datetimeHour }\n      }\n    }\n  }\n}",
+            "body_graphql_variables": "{\"accountTag\":\"REPLACE_CF_ACCOUNT_ID\",\"host\":\"blog.paulserban.eu\",\"start\":\"${__from:date:iso}\",\"end\":\"${__to:date:iso}\"}",
+            "data": ""
+          }
+        },
+        {
+          "refId": "C",
+          "datasource": {
+            "type": "yesoreyeram-infinity-datasource",
+            "uid": "cf-graphql"
+          },
+          "type": "graphql",
+          "source": "url",
+          "url": "https://api.cloudflare.com/client/v4/graphql",
+          "parser": "backend",
+          "format": "timeseries",
+          "root_selector": "data.viewer.accounts[0].rumWebVitalsEventsAdaptiveGroups",
+          "columns": [
+            {
+              "selector": "dimensions.datetimeHour",
+              "text": "Time",
+              "type": "timestamp"
+            },
+            {
+              "selector": "quantiles.interactionToNextPaintP75",
+              "text": "news-feed.paulserban.eu",
+              "type": "number"
+            }
+          ],
+          "filters": [],
+          "url_options": {
+            "method": "POST",
+            "body_type": "graphql",
+            "body_content_type": "application/json",
+            "body_graphql_query": "query RumCwvHourly($accountTag: string!, $host: string!, $start: Time!, $end: Time!) {\n  viewer {\n    accounts(filter: { accountTag: $accountTag }) {\n      rumWebVitalsEventsAdaptiveGroups(\n        limit: 5000\n        filter: { datetime_geq: $start, datetime_leq: $end, requestHost: $host }\n        orderBy: [datetimeHour_ASC]\n      ) {\n        quantiles {\n          largestContentfulPaintP75\n          interactionToNextPaintP75\n          cumulativeLayoutShiftP75\n        }\n        dimensions { datetimeHour }\n      }\n    }\n  }\n}",
+            "body_graphql_variables": "{\"accountTag\":\"REPLACE_CF_ACCOUNT_ID\",\"host\":\"news-feed.paulserban.eu\",\"start\":\"${__from:date:iso}\",\"end\":\"${__to:date:iso}\"}",
+            "data": ""
+          }
+        },
+        {
+          "refId": "D",
+          "datasource": {
+            "type": "yesoreyeram-infinity-datasource",
+            "uid": "cf-graphql"
+          },
+          "type": "graphql",
+          "source": "url",
+          "url": "https://api.cloudflare.com/client/v4/graphql",
+          "parser": "backend",
+          "format": "timeseries",
+          "root_selector": "data.viewer.accounts[0].rumWebVitalsEventsAdaptiveGroups",
+          "columns": [
+            {
+              "selector": "dimensions.datetimeHour",
+              "text": "Time",
+              "type": "timestamp"
+            },
+            {
+              "selector": "quantiles.interactionToNextPaintP75",
+              "text": "quiz.paulserban.eu",
+              "type": "number"
+            }
+          ],
+          "filters": [],
+          "url_options": {
+            "method": "POST",
+            "body_type": "graphql",
+            "body_content_type": "application/json",
+            "body_graphql_query": "query RumCwvHourly($accountTag: string!, $host: string!, $start: Time!, $end: Time!) {\n  viewer {\n    accounts(filter: { accountTag: $accountTag }) {\n      rumWebVitalsEventsAdaptiveGroups(\n        limit: 5000\n        filter: { datetime_geq: $start, datetime_leq: $end, requestHost: $host }\n        orderBy: [datetimeHour_ASC]\n      ) {\n        quantiles {\n          largestContentfulPaintP75\n          interactionToNextPaintP75\n          cumulativeLayoutShiftP75\n        }\n        dimensions { datetimeHour }\n      }\n    }\n  }\n}",
+            "body_graphql_variables": "{\"accountTag\":\"REPLACE_CF_ACCOUNT_ID\",\"host\":\"quiz.paulserban.eu\",\"start\":\"${__from:date:iso}\",\"end\":\"${__to:date:iso}\"}",
+            "data": ""
+          }
+        }
+      ],
+      "title": "INP p75 over time",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "yesoreyeram-infinity-datasource",
+        "uid": "cf-graphql"
+      },
+      "description": "Hourly p75 from rumWebVitalsEventsAdaptiveGroups.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 15,
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "showPoints": "never",
+            "spanNulls": true,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            }
+          },
+          "unit": "short",
+          "decimals": 3
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 8,
+        "x": 16,
+        "y": 42
+      },
+      "id": 16,
+      "options": {
+        "legend": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "yesoreyeram-infinity-datasource",
+            "uid": "cf-graphql"
+          },
+          "type": "graphql",
+          "source": "url",
+          "url": "https://api.cloudflare.com/client/v4/graphql",
+          "parser": "backend",
+          "format": "timeseries",
+          "root_selector": "data.viewer.accounts[0].rumWebVitalsEventsAdaptiveGroups",
+          "columns": [
+            {
+              "selector": "dimensions.datetimeHour",
+              "text": "Time",
+              "type": "timestamp"
+            },
+            {
+              "selector": "quantiles.cumulativeLayoutShiftP75",
+              "text": "paulserban.eu",
+              "type": "number"
+            }
+          ],
+          "filters": [],
+          "url_options": {
+            "method": "POST",
+            "body_type": "graphql",
+            "body_content_type": "application/json",
+            "body_graphql_query": "query RumCwvHourly($accountTag: string!, $host: string!, $start: Time!, $end: Time!) {\n  viewer {\n    accounts(filter: { accountTag: $accountTag }) {\n      rumWebVitalsEventsAdaptiveGroups(\n        limit: 5000\n        filter: { datetime_geq: $start, datetime_leq: $end, requestHost: $host }\n        orderBy: [datetimeHour_ASC]\n      ) {\n        quantiles {\n          largestContentfulPaintP75\n          interactionToNextPaintP75\n          cumulativeLayoutShiftP75\n        }\n        dimensions { datetimeHour }\n      }\n    }\n  }\n}",
+            "body_graphql_variables": "{\"accountTag\":\"REPLACE_CF_ACCOUNT_ID\",\"host\":\"paulserban.eu\",\"start\":\"${__from:date:iso}\",\"end\":\"${__to:date:iso}\"}",
+            "data": ""
+          }
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "yesoreyeram-infinity-datasource",
+            "uid": "cf-graphql"
+          },
+          "type": "graphql",
+          "source": "url",
+          "url": "https://api.cloudflare.com/client/v4/graphql",
+          "parser": "backend",
+          "format": "timeseries",
+          "root_selector": "data.viewer.accounts[0].rumWebVitalsEventsAdaptiveGroups",
+          "columns": [
+            {
+              "selector": "dimensions.datetimeHour",
+              "text": "Time",
+              "type": "timestamp"
+            },
+            {
+              "selector": "quantiles.cumulativeLayoutShiftP75",
+              "text": "blog.paulserban.eu",
+              "type": "number"
+            }
+          ],
+          "filters": [],
+          "url_options": {
+            "method": "POST",
+            "body_type": "graphql",
+            "body_content_type": "application/json",
+            "body_graphql_query": "query RumCwvHourly($accountTag: string!, $host: string!, $start: Time!, $end: Time!) {\n  viewer {\n    accounts(filter: { accountTag: $accountTag }) {\n      rumWebVitalsEventsAdaptiveGroups(\n        limit: 5000\n        filter: { datetime_geq: $start, datetime_leq: $end, requestHost: $host }\n        orderBy: [datetimeHour_ASC]\n      ) {\n        quantiles {\n          largestContentfulPaintP75\n          interactionToNextPaintP75\n          cumulativeLayoutShiftP75\n        }\n        dimensions { datetimeHour }\n      }\n    }\n  }\n}",
+            "body_graphql_variables": "{\"accountTag\":\"REPLACE_CF_ACCOUNT_ID\",\"host\":\"blog.paulserban.eu\",\"start\":\"${__from:date:iso}\",\"end\":\"${__to:date:iso}\"}",
+            "data": ""
+          }
+        },
+        {
+          "refId": "C",
+          "datasource": {
+            "type": "yesoreyeram-infinity-datasource",
+            "uid": "cf-graphql"
+          },
+          "type": "graphql",
+          "source": "url",
+          "url": "https://api.cloudflare.com/client/v4/graphql",
+          "parser": "backend",
+          "format": "timeseries",
+          "root_selector": "data.viewer.accounts[0].rumWebVitalsEventsAdaptiveGroups",
+          "columns": [
+            {
+              "selector": "dimensions.datetimeHour",
+              "text": "Time",
+              "type": "timestamp"
+            },
+            {
+              "selector": "quantiles.cumulativeLayoutShiftP75",
+              "text": "news-feed.paulserban.eu",
+              "type": "number"
+            }
+          ],
+          "filters": [],
+          "url_options": {
+            "method": "POST",
+            "body_type": "graphql",
+            "body_content_type": "application/json",
+            "body_graphql_query": "query RumCwvHourly($accountTag: string!, $host: string!, $start: Time!, $end: Time!) {\n  viewer {\n    accounts(filter: { accountTag: $accountTag }) {\n      rumWebVitalsEventsAdaptiveGroups(\n        limit: 5000\n        filter: { datetime_geq: $start, datetime_leq: $end, requestHost: $host }\n        orderBy: [datetimeHour_ASC]\n      ) {\n        quantiles {\n          largestContentfulPaintP75\n          interactionToNextPaintP75\n          cumulativeLayoutShiftP75\n        }\n        dimensions { datetimeHour }\n      }\n    }\n  }\n}",
+            "body_graphql_variables": "{\"accountTag\":\"REPLACE_CF_ACCOUNT_ID\",\"host\":\"news-feed.paulserban.eu\",\"start\":\"${__from:date:iso}\",\"end\":\"${__to:date:iso}\"}",
+            "data": ""
+          }
+        },
+        {
+          "refId": "D",
+          "datasource": {
+            "type": "yesoreyeram-infinity-datasource",
+            "uid": "cf-graphql"
+          },
+          "type": "graphql",
+          "source": "url",
+          "url": "https://api.cloudflare.com/client/v4/graphql",
+          "parser": "backend",
+          "format": "timeseries",
+          "root_selector": "data.viewer.accounts[0].rumWebVitalsEventsAdaptiveGroups",
+          "columns": [
+            {
+              "selector": "dimensions.datetimeHour",
+              "text": "Time",
+              "type": "timestamp"
+            },
+            {
+              "selector": "quantiles.cumulativeLayoutShiftP75",
+              "text": "quiz.paulserban.eu",
+              "type": "number"
+            }
+          ],
+          "filters": [],
+          "url_options": {
+            "method": "POST",
+            "body_type": "graphql",
+            "body_content_type": "application/json",
+            "body_graphql_query": "query RumCwvHourly($accountTag: string!, $host: string!, $start: Time!, $end: Time!) {\n  viewer {\n    accounts(filter: { accountTag: $accountTag }) {\n      rumWebVitalsEventsAdaptiveGroups(\n        limit: 5000\n        filter: { datetime_geq: $start, datetime_leq: $end, requestHost: $host }\n        orderBy: [datetimeHour_ASC]\n      ) {\n        quantiles {\n          largestContentfulPaintP75\n          interactionToNextPaintP75\n          cumulativeLayoutShiftP75\n        }\n        dimensions { datetimeHour }\n      }\n    }\n  }\n}",
+            "body_graphql_variables": "{\"accountTag\":\"REPLACE_CF_ACCOUNT_ID\",\"host\":\"quiz.paulserban.eu\",\"start\":\"${__from:date:iso}\",\"end\":\"${__to:date:iso}\"}",
+            "data": ""
+          }
+        }
+      ],
+      "title": "CLS p75 over time",
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 52
+      },
+      "id": 17,
+      "panels": [],
+      "title": "Correlate with CDN",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "grafana",
+        "uid": "-- Grafana --"
+      },
+      "description": "These two timeseries share the dashboard time range. They measure different things.",
+      "gridPos": {
+        "h": 4,
+        "w": 24,
+        "x": 0,
+        "y": 53
+      },
+      "id": 18,
+      "options": {
+        "code": {
+          "language": "markdown",
+          "showLineNumbers": false,
+          "showMiniMap": false
+        },
+        "content": "**Edge hits are not page views.** CloudWatch `AWS/CloudFront` Requests counts every object at the CDN (HTML, JS, images, bots, health checks). Cloudflare Web Analytics counts browsers that ran `beacon.min.js`. Asset distributions (`assets`, `news-data`) have **no** beacon.\n\nExpect Cloudflare page views << CloudFront requests. If they match, something is wrong. JS-blocked clients, 5xx that never returned HTML, and cache-only asset traffic never appear here.",
+        "mode": "markdown"
+      },
+      "title": "How to read this row",
+      "type": "text"
+    },
+    {
+      "datasource": {
+        "type": "cloudwatch",
+        "uid": "cloudwatch"
+      },
+      "description": "CloudWatch AWS/CloudFront Requests Sum \u2014 all six distributions.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 15,
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "showPoints": "never",
+            "spanNulls": true,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            }
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 12,
+        "x": 0,
+        "y": 57
+      },
+      "id": 19,
+      "options": {
+        "legend": {
+          "calcs": [
+            "sum"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 0,
+          "namespace": "AWS/CloudFront",
+          "metricName": "Requests",
+          "dimensions": {
+            "DistributionId": [
+              "E23PAQJ8T46O9C"
+            ],
+            "Region": [
+              "Global"
+            ]
+          },
+          "matchExact": true,
+          "statistic": "Sum",
+          "period": "300",
+          "region": "us-east-1",
+          "label": "paulserban.eu"
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 0,
+          "namespace": "AWS/CloudFront",
+          "metricName": "Requests",
+          "dimensions": {
+            "DistributionId": [
+              "E1V44X4FXZUKSR"
+            ],
+            "Region": [
+              "Global"
+            ]
+          },
+          "matchExact": true,
+          "statistic": "Sum",
+          "period": "300",
+          "region": "us-east-1",
+          "label": "blog.paulserban.eu"
+        },
+        {
+          "refId": "C",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 0,
+          "namespace": "AWS/CloudFront",
+          "metricName": "Requests",
+          "dimensions": {
+            "DistributionId": [
+              "E1GGJ55TOMLCNY"
+            ],
+            "Region": [
+              "Global"
+            ]
+          },
+          "matchExact": true,
+          "statistic": "Sum",
+          "period": "300",
+          "region": "us-east-1",
+          "label": "quiz.paulserban.eu"
+        },
+        {
+          "refId": "D",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 0,
+          "namespace": "AWS/CloudFront",
+          "metricName": "Requests",
+          "dimensions": {
+            "DistributionId": [
+              "E25T4L8ZU09851"
+            ],
+            "Region": [
+              "Global"
+            ]
+          },
+          "matchExact": true,
+          "statistic": "Sum",
+          "period": "300",
+          "region": "us-east-1",
+          "label": "news-feed.paulserban.eu"
+        },
+        {
+          "refId": "E",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 0,
+          "namespace": "AWS/CloudFront",
+          "metricName": "Requests",
+          "dimensions": {
+            "DistributionId": [
+              "E3LBRPUFFA7TQD"
+            ],
+            "Region": [
+              "Global"
+            ]
+          },
+          "matchExact": true,
+          "statistic": "Sum",
+          "period": "300",
+          "region": "us-east-1",
+          "label": "assets.paulserban.eu"
+        },
+        {
+          "refId": "F",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 0,
+          "namespace": "AWS/CloudFront",
+          "metricName": "Requests",
+          "dimensions": {
+            "DistributionId": [
+              "E133DRJKJWB033"
+            ],
+            "Region": [
+              "Global"
+            ]
+          },
+          "matchExact": true,
+          "statistic": "Sum",
+          "period": "300",
+          "region": "us-east-1",
+          "label": "news-data.paulserban.eu"
+        }
+      ],
+      "title": "CloudFront requests (edge)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "yesoreyeram-infinity-datasource",
+        "uid": "cf-graphql"
+      },
+      "description": "Same query as Page views over time \u2014 four beacon hostnames only.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 15,
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "showPoints": "never",
+            "spanNulls": true,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            }
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 12,
+        "x": 12,
+        "y": 57
+      },
+      "id": 20,
+      "options": {
+        "legend": {
+          "calcs": [
+            "sum"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "yesoreyeram-infinity-datasource",
+            "uid": "cf-graphql"
+          },
+          "type": "graphql",
+          "source": "url",
+          "url": "https://api.cloudflare.com/client/v4/graphql",
+          "parser": "backend",
+          "format": "timeseries",
+          "root_selector": "data.viewer.accounts[0].rumPageloadEventsAdaptiveGroups",
+          "columns": [
+            {
+              "selector": "dimensions.datetimeHour",
+              "text": "Time",
+              "type": "timestamp"
+            },
+            {
+              "selector": "count",
+              "text": "paulserban.eu",
+              "type": "number"
+            }
+          ],
+          "filters": [],
+          "url_options": {
+            "method": "POST",
+            "body_type": "graphql",
+            "body_content_type": "application/json",
+            "body_graphql_query": "query RumHourly($accountTag: string!, $host: string!, $start: Time!, $end: Time!) {\n  viewer {\n    accounts(filter: { accountTag: $accountTag }) {\n      rumPageloadEventsAdaptiveGroups(\n        limit: 5000\n        filter: { datetime_geq: $start, datetime_leq: $end, requestHost: $host }\n        orderBy: [datetimeHour_ASC]\n      ) {\n        count\n        sum { visits }\n        dimensions { datetimeHour }\n      }\n    }\n  }\n}",
+            "body_graphql_variables": "{\"accountTag\":\"REPLACE_CF_ACCOUNT_ID\",\"host\":\"paulserban.eu\",\"start\":\"${__from:date:iso}\",\"end\":\"${__to:date:iso}\"}",
+            "data": ""
+          }
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "yesoreyeram-infinity-datasource",
+            "uid": "cf-graphql"
+          },
+          "type": "graphql",
+          "source": "url",
+          "url": "https://api.cloudflare.com/client/v4/graphql",
+          "parser": "backend",
+          "format": "timeseries",
+          "root_selector": "data.viewer.accounts[0].rumPageloadEventsAdaptiveGroups",
+          "columns": [
+            {
+              "selector": "dimensions.datetimeHour",
+              "text": "Time",
+              "type": "timestamp"
+            },
+            {
+              "selector": "count",
+              "text": "blog.paulserban.eu",
+              "type": "number"
+            }
+          ],
+          "filters": [],
+          "url_options": {
+            "method": "POST",
+            "body_type": "graphql",
+            "body_content_type": "application/json",
+            "body_graphql_query": "query RumHourly($accountTag: string!, $host: string!, $start: Time!, $end: Time!) {\n  viewer {\n    accounts(filter: { accountTag: $accountTag }) {\n      rumPageloadEventsAdaptiveGroups(\n        limit: 5000\n        filter: { datetime_geq: $start, datetime_leq: $end, requestHost: $host }\n        orderBy: [datetimeHour_ASC]\n      ) {\n        count\n        sum { visits }\n        dimensions { datetimeHour }\n      }\n    }\n  }\n}",
+            "body_graphql_variables": "{\"accountTag\":\"REPLACE_CF_ACCOUNT_ID\",\"host\":\"blog.paulserban.eu\",\"start\":\"${__from:date:iso}\",\"end\":\"${__to:date:iso}\"}",
+            "data": ""
+          }
+        },
+        {
+          "refId": "C",
+          "datasource": {
+            "type": "yesoreyeram-infinity-datasource",
+            "uid": "cf-graphql"
+          },
+          "type": "graphql",
+          "source": "url",
+          "url": "https://api.cloudflare.com/client/v4/graphql",
+          "parser": "backend",
+          "format": "timeseries",
+          "root_selector": "data.viewer.accounts[0].rumPageloadEventsAdaptiveGroups",
+          "columns": [
+            {
+              "selector": "dimensions.datetimeHour",
+              "text": "Time",
+              "type": "timestamp"
+            },
+            {
+              "selector": "count",
+              "text": "news-feed.paulserban.eu",
+              "type": "number"
+            }
+          ],
+          "filters": [],
+          "url_options": {
+            "method": "POST",
+            "body_type": "graphql",
+            "body_content_type": "application/json",
+            "body_graphql_query": "query RumHourly($accountTag: string!, $host: string!, $start: Time!, $end: Time!) {\n  viewer {\n    accounts(filter: { accountTag: $accountTag }) {\n      rumPageloadEventsAdaptiveGroups(\n        limit: 5000\n        filter: { datetime_geq: $start, datetime_leq: $end, requestHost: $host }\n        orderBy: [datetimeHour_ASC]\n      ) {\n        count\n        sum { visits }\n        dimensions { datetimeHour }\n      }\n    }\n  }\n}",
+            "body_graphql_variables": "{\"accountTag\":\"REPLACE_CF_ACCOUNT_ID\",\"host\":\"news-feed.paulserban.eu\",\"start\":\"${__from:date:iso}\",\"end\":\"${__to:date:iso}\"}",
+            "data": ""
+          }
+        },
+        {
+          "refId": "D",
+          "datasource": {
+            "type": "yesoreyeram-infinity-datasource",
+            "uid": "cf-graphql"
+          },
+          "type": "graphql",
+          "source": "url",
+          "url": "https://api.cloudflare.com/client/v4/graphql",
+          "parser": "backend",
+          "format": "timeseries",
+          "root_selector": "data.viewer.accounts[0].rumPageloadEventsAdaptiveGroups",
+          "columns": [
+            {
+              "selector": "dimensions.datetimeHour",
+              "text": "Time",
+              "type": "timestamp"
+            },
+            {
+              "selector": "count",
+              "text": "quiz.paulserban.eu",
+              "type": "number"
+            }
+          ],
+          "filters": [],
+          "url_options": {
+            "method": "POST",
+            "body_type": "graphql",
+            "body_content_type": "application/json",
+            "body_graphql_query": "query RumHourly($accountTag: string!, $host: string!, $start: Time!, $end: Time!) {\n  viewer {\n    accounts(filter: { accountTag: $accountTag }) {\n      rumPageloadEventsAdaptiveGroups(\n        limit: 5000\n        filter: { datetime_geq: $start, datetime_leq: $end, requestHost: $host }\n        orderBy: [datetimeHour_ASC]\n      ) {\n        count\n        sum { visits }\n        dimensions { datetimeHour }\n      }\n    }\n  }\n}",
+            "body_graphql_variables": "{\"accountTag\":\"REPLACE_CF_ACCOUNT_ID\",\"host\":\"quiz.paulserban.eu\",\"start\":\"${__from:date:iso}\",\"end\":\"${__to:date:iso}\"}",
+            "data": ""
+          }
+        }
+      ],
+      "title": "Cloudflare page views (browser)",
+      "type": "timeseries"
+    }
+  ],
+  "refresh": "15m",
+  "schemaVersion": 39,
+  "tags": [
+    "cloudflare",
+    "web-analytics",
+    "phase-0b"
+  ],
+  "templating": {
+    "list": []
+  },
+  "time": {
+    "from": "now-7d",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "Cloudflare Web Analytics",
+  "uid": "cloudflare-web-analytics",
+  "version": 2
+}

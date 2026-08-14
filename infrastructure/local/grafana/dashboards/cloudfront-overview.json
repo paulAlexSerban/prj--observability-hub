@@ -15,7 +15,7 @@
       }
     ]
   },
-  "description": "CDN health: CloudWatch metrics + Loki cache/error/miss ops. Cross-link: CloudFront traffic.",
+  "description": "CDN health: CloudWatch metrics + Loki cache/error/miss ops. Cross-link: CloudFront traffic, Cloudflare Web Analytics.",
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 1,
@@ -31,6 +31,18 @@
       "tooltip": "Traffic / debug (paths, referrers, forensics)",
       "type": "link",
       "url": "/d/cloudfront-access-logs"
+    },
+    {
+      "asDropdown": false,
+      "icon": "dashboard",
+      "includeVars": true,
+      "keepTime": true,
+      "tags": [],
+      "targetBlank": false,
+      "title": "Cloudflare Web Analytics",
+      "tooltip": "Visitor RUM (beacons) + Core Web Vitals",
+      "type": "link",
+      "url": "/d/cloudflare-web-analytics"
     }
   ],
   "panels": [
@@ -183,6 +195,56 @@
           "period": "300",
           "region": "us-east-1",
           "label": "news-feed.paulserban.eu"
+        },
+        {
+          "refId": "E",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 0,
+          "namespace": "AWS/CloudFront",
+          "metricName": "Requests",
+          "dimensions": {
+            "DistributionId": [
+              "E3LBRPUFFA7TQD"
+            ],
+            "Region": [
+              "Global"
+            ]
+          },
+          "matchExact": true,
+          "statistic": "Sum",
+          "period": "300",
+          "region": "us-east-1",
+          "label": "assets.paulserban.eu"
+        },
+        {
+          "refId": "F",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 0,
+          "namespace": "AWS/CloudFront",
+          "metricName": "Requests",
+          "dimensions": {
+            "DistributionId": [
+              "E133DRJKJWB033"
+            ],
+            "Region": [
+              "Global"
+            ]
+          },
+          "matchExact": true,
+          "statistic": "Sum",
+          "period": "300",
+          "region": "us-east-1",
+          "label": "news-data.paulserban.eu"
         }
       ],
       "title": "Requests",
@@ -337,6 +399,56 @@
           "period": "300",
           "region": "us-east-1",
           "label": "news-feed.paulserban.eu"
+        },
+        {
+          "refId": "E",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 0,
+          "namespace": "AWS/CloudFront",
+          "metricName": "4xxErrorRate",
+          "dimensions": {
+            "DistributionId": [
+              "E3LBRPUFFA7TQD"
+            ],
+            "Region": [
+              "Global"
+            ]
+          },
+          "matchExact": true,
+          "statistic": "Average",
+          "period": "300",
+          "region": "us-east-1",
+          "label": "assets.paulserban.eu"
+        },
+        {
+          "refId": "F",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 0,
+          "namespace": "AWS/CloudFront",
+          "metricName": "4xxErrorRate",
+          "dimensions": {
+            "DistributionId": [
+              "E133DRJKJWB033"
+            ],
+            "Region": [
+              "Global"
+            ]
+          },
+          "matchExact": true,
+          "statistic": "Average",
+          "period": "300",
+          "region": "us-east-1",
+          "label": "news-data.paulserban.eu"
         }
       ],
       "title": "4xx rate",
@@ -491,6 +603,56 @@
           "period": "300",
           "region": "us-east-1",
           "label": "news-feed.paulserban.eu"
+        },
+        {
+          "refId": "E",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 0,
+          "namespace": "AWS/CloudFront",
+          "metricName": "5xxErrorRate",
+          "dimensions": {
+            "DistributionId": [
+              "E3LBRPUFFA7TQD"
+            ],
+            "Region": [
+              "Global"
+            ]
+          },
+          "matchExact": true,
+          "statistic": "Average",
+          "period": "300",
+          "region": "us-east-1",
+          "label": "assets.paulserban.eu"
+        },
+        {
+          "refId": "F",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 0,
+          "namespace": "AWS/CloudFront",
+          "metricName": "5xxErrorRate",
+          "dimensions": {
+            "DistributionId": [
+              "E133DRJKJWB033"
+            ],
+            "Region": [
+              "Global"
+            ]
+          },
+          "matchExact": true,
+          "statistic": "Average",
+          "period": "300",
+          "region": "us-east-1",
+          "label": "news-data.paulserban.eu"
         }
       ],
       "title": "5xx rate",
@@ -710,6 +872,56 @@
           "period": "300",
           "region": "us-east-1",
           "label": "news-feed.paulserban.eu"
+        },
+        {
+          "refId": "E",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 0,
+          "namespace": "AWS/CloudFront",
+          "metricName": "BytesDownloaded",
+          "dimensions": {
+            "DistributionId": [
+              "E3LBRPUFFA7TQD"
+            ],
+            "Region": [
+              "Global"
+            ]
+          },
+          "matchExact": true,
+          "statistic": "Sum",
+          "period": "300",
+          "region": "us-east-1",
+          "label": "assets.paulserban.eu"
+        },
+        {
+          "refId": "F",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 0,
+          "namespace": "AWS/CloudFront",
+          "metricName": "BytesDownloaded",
+          "dimensions": {
+            "DistributionId": [
+              "E133DRJKJWB033"
+            ],
+            "Region": [
+              "Global"
+            ]
+          },
+          "matchExact": true,
+          "statistic": "Sum",
+          "period": "300",
+          "region": "us-east-1",
+          "label": "news-data.paulserban.eu"
         }
       ],
       "title": "Bytes downloaded",
@@ -864,6 +1076,56 @@
           "period": "300",
           "region": "us-east-1",
           "label": "news-feed.paulserban.eu"
+        },
+        {
+          "refId": "E",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 0,
+          "namespace": "AWS/CloudFront",
+          "metricName": "Requests",
+          "dimensions": {
+            "DistributionId": [
+              "E3LBRPUFFA7TQD"
+            ],
+            "Region": [
+              "Global"
+            ]
+          },
+          "matchExact": true,
+          "statistic": "Sum",
+          "period": "300",
+          "region": "us-east-1",
+          "label": "assets.paulserban.eu"
+        },
+        {
+          "refId": "F",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 0,
+          "namespace": "AWS/CloudFront",
+          "metricName": "Requests",
+          "dimensions": {
+            "DistributionId": [
+              "E133DRJKJWB033"
+            ],
+            "Region": [
+              "Global"
+            ]
+          },
+          "matchExact": true,
+          "statistic": "Sum",
+          "period": "300",
+          "region": "us-east-1",
+          "label": "news-data.paulserban.eu"
         }
       ],
       "title": "Requests over time",
@@ -1020,6 +1282,56 @@
           "period": "300",
           "region": "us-east-1",
           "label": "news-feed.paulserban.eu"
+        },
+        {
+          "refId": "E",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 0,
+          "namespace": "AWS/CloudFront",
+          "metricName": "4xxErrorRate",
+          "dimensions": {
+            "DistributionId": [
+              "E3LBRPUFFA7TQD"
+            ],
+            "Region": [
+              "Global"
+            ]
+          },
+          "matchExact": true,
+          "statistic": "Average",
+          "period": "300",
+          "region": "us-east-1",
+          "label": "assets.paulserban.eu"
+        },
+        {
+          "refId": "F",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 0,
+          "namespace": "AWS/CloudFront",
+          "metricName": "4xxErrorRate",
+          "dimensions": {
+            "DistributionId": [
+              "E133DRJKJWB033"
+            ],
+            "Region": [
+              "Global"
+            ]
+          },
+          "matchExact": true,
+          "statistic": "Average",
+          "period": "300",
+          "region": "us-east-1",
+          "label": "news-data.paulserban.eu"
         }
       ],
       "title": "4xx error rate",
@@ -1176,6 +1488,56 @@
           "period": "300",
           "region": "us-east-1",
           "label": "news-feed.paulserban.eu"
+        },
+        {
+          "refId": "E",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 0,
+          "namespace": "AWS/CloudFront",
+          "metricName": "5xxErrorRate",
+          "dimensions": {
+            "DistributionId": [
+              "E3LBRPUFFA7TQD"
+            ],
+            "Region": [
+              "Global"
+            ]
+          },
+          "matchExact": true,
+          "statistic": "Average",
+          "period": "300",
+          "region": "us-east-1",
+          "label": "assets.paulserban.eu"
+        },
+        {
+          "refId": "F",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 0,
+          "namespace": "AWS/CloudFront",
+          "metricName": "5xxErrorRate",
+          "dimensions": {
+            "DistributionId": [
+              "E133DRJKJWB033"
+            ],
+            "Region": [
+              "Global"
+            ]
+          },
+          "matchExact": true,
+          "statistic": "Average",
+          "period": "300",
+          "region": "us-east-1",
+          "label": "news-data.paulserban.eu"
         }
       ],
       "title": "5xx error rate",
@@ -1382,7 +1744,7 @@
         }
       ],
       "title": "Top 20 error paths (4xx/5xx)",
-      "type": "bargauge"
+      "type": "table"
     },
     {
       "datasource": {

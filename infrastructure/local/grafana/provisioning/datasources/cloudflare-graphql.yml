@@ -1,0 +1,16 @@
+apiVersion: 1
+
+datasources:
+  - name: Cloudflare GraphQL
+    type: yesoreyeram-infinity-datasource
+    access: proxy
+    uid: cf-graphql
+    isDefault: false
+    editable: false
+    jsonData:
+      auth_method: bearerToken
+      allowedHosts:
+        - https://api.cloudflare.com
+      timeoutInSeconds: 60
+    secureJsonData:
+      bearerToken: ${CF_API_TOKEN}

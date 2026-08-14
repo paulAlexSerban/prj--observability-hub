@@ -23,6 +23,16 @@ local.file_match "cloudfront" {
 			job      = "cloudfront",
 			site     = "news-feed.paulserban.eu",
 		},
+		{
+			__path__ = "/logs/news-data.paulserban.eu/**/*.gz",
+			job      = "cloudfront",
+			site     = "news-data.paulserban.eu",
+		},
+		{
+			__path__ = "/logs/assets.paulserban.eu/**/*.gz",
+			job      = "cloudfront",
+			site     = "assets.paulserban.eu",
+		},
 	]
 
 	sync_period = "30s"

@@ -1,6 +1,6 @@
 # Observability Stack
 
-Self-hosted observability, analytics, and monitoring for my online projects - currently covering **paulserban.eu**, **blog.paulserban.eu**, **quiz.paulserban.eu**, and **news-feed.paulserban.eu** (Astro SSG / SPA, hosted on AWS S3 + CloudFront + Route53), designed to extend to any future project without re-architecting.
+Self-hosted observability, analytics, and monitoring for my online projects - currently covering **paulserban.eu**, **blog.paulserban.eu**, **quiz.paulserban.eu**, **news-feed.paulserban.eu**, **news-data.paulserban.eu**, and **assets.paulserban.eu** (Astro SSG / SPA + JSON/media CDNs, hosted on AWS S3 + CloudFront + Route53), designed to extend to any future project without re-architecting.
 
 ## Goals
 
@@ -42,7 +42,7 @@ infrastructure/
 _docs/          # spikes, phased plan, ADRs
 ```
 
-CloudFront access logging (shared log bucket + `logging_config` on site/blog/quiz/news) lives in `prj--personal-portfolio--v3` Terraform, which owns the distributions.
+CloudFront access logging (shared log bucket + `logging_config` on all six distributions) lives in `prj--personal-portfolio--v3` Terraform, which owns the distributions.
 
 ## Implementation Plan
 
@@ -63,7 +63,7 @@ Phase 0 and 0b require no hosting spend. 0b how-to: [`02 - adding-cloudflare-web
 
 ## Getting Started (Phase 0)
 
-1. Enable CloudFront access logging to the shared S3 bucket (already applied in `prj--personal-portfolio--v3` prod for site/blog/quiz/news-feed).
+1. Enable CloudFront access logging to the shared S3 bucket (already applied in `prj--personal-portfolio--v3` prod for all six distributions).
 2. Apply the read-only IAM user and copy keys into local env:
    ```bash
    cd infrastructure/aws && terraform apply
@@ -86,13 +86,15 @@ Phase 0 and 0b require no hosting spend. 0b how-to: [`02 - adding-cloudflare-web
    ./scripts/query.sh top-ips
    ./scripts/query.sh edge-pops blog.paulserban.eu
    ./scripts/query.sh top-paths news-feed.paulserban.eu
+   ./scripts/query.sh top-paths news-data.paulserban.eu
+   ./scripts/query.sh cache-hit-ratio assets.paulserban.eu
    ```
 
 More detail: [`infrastructure/local/README.md`](infrastructure/local/README.md). Exit criteria for this phase are in the phased plan doc.
 
 ## Scope
 
-Initial rollout targets the four sites above. The stack is intentionally domain-agnostic (Umami/Uptime Kuma/Grafana all support multiple sites per instance), so adding a new project later means adding a site entry and a monitor, not standing up new infrastructure.
+Initial rollout targets the six CloudFront hostnames above (four HTML surfaces plus the news-data and assets CDNs). The stack is intentionally domain-agnostic (Umami/Uptime Kuma/Grafana all support multiple sites per instance), so adding a new project later means adding a site entry and a monitor, not standing up new infrastructure.
 
 ## License
 
